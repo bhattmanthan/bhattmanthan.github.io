@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manthan Bhatt — Cybersecurity Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+
+  <div class="cur" id="cur"></div>
+  <div class="cur-ring" id="curR"></div>
+
+  <!-- ══ NAV ══════════════════════════════ -->
+  <nav>
+    <div class="nav-logo">Manthan<em>.</em></div>
+    <ul class="nav-links" id="navL">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="ham" id="ham" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══ HERO ═════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-dots"></div>
+    <div class="hero-glow"></div>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Cybersecurity Engineer</p>
+
+      <h1 class="hero-name">
+        Manthan
+        <span class="accent">Bhatt</span>
+      </h1>
+
+      <p class="hero-type-row">
+        <span class="prompt">$ role —&nbsp;</span><span id="typed"></span><span class="blink"></span>
+      </p>
+
+      <p class="hero-tagline">
+        Breaking systems ethically. Building defences that hold.<br>
+        Turning vulnerabilities into understanding before adversaries can weaponise them.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-solid">Initialize Contact</a>
+        <a href="#projects" class="btn btn-ghost">View Projects</a>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>scroll</span>
+      <div class="scroll-bar"></div>
+    </div>
+  </section>
+
+  <!-- ══ ABOUT ════════════════════════════ -->
+  <div class="div-line"></div>
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-label rev">01 — About</div>
+      <h2 class="sec-title rev">Who I Am</h2>
+
+      <div class="about-grid">
+        <div class="about-body rev">
+          <p>
+            I'm a <strong>second-year B.Tech Computer Science</strong> student at Nirma University
+            with a hands-on obsession for offensive security. My work spans penetration testing,
+            red team tooling, web application security, and network analysis.
+          </p>
+          <p>
+            I built <strong>L.E.A.P.</strong> — a modular Linux post-exploitation framework written
+            entirely in Bash — from scratch. I've competed in global CTF competitions, placed
+            <strong>#125 globally</strong> at the AWS Skills to Job CTF, and explored vulnerability
+            research on Bugcrowd.
+          </p>
+          <p>
+            Open to roles in <strong>penetration testing, vulnerability research,</strong> and
+            <strong>security engineering</strong> — remote or on-site.
+          </p>
+        </div>
+
+        <div class="stat-panel rev">
+          <div class="stat">
+            <div class="stat-n">8.35</div>
+            <div class="stat-l">GPA / 10</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n">Top 5%</div>
+            <div class="stat-l">TryHackMe</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n">#125</div>
+            <div class="stat-l">AWS CTF Global</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n">14+</div>
+            <div class="stat-l">THM Badges</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SKILLS ═══════════════════════════ -->
+  <div class="div-line"></div>
+  <section id="skills">
+    <div class="wrap">
+      <div class="sec-label rev">02 — Skills</div>
+      <h2 class="sec-title rev">Arsenal</h2>
+
+      <div class="skills-wrap">
+
+        <div class="rev">
+          <p class="skill-row-label">Languages</p>
+          <div class="chips">
+            <span class="chip hi">Python</span>
+            <span class="chip hi">Bash</span>
+            <span class="chip">C</span>
+            <span class="chip">C++</span>
+            <span class="chip">Java</span>
+          </div>
+        </div>
+
+        <div class="rev">
+          <p class="skill-row-label">Security Tools</p>
+          <div class="chips">
+            <span class="chip hi">Nmap</span>
+            <span class="chip hi">Burp Suite</span>
+            <span class="chip hi">Metasploit</span>
+            <span class="chip">Wireshark</span>
+            <span class="chip">Gobuster</span>
+            <span class="chip">Netcat</span>
+            <span class="chip">Socat</span>
+          </div>
+        </div>
+
+        <div class="rev">
+          <p class="skill-row-label">Security Domains</p>
+          <div class="chips">
+            <span class="chip hi">Penetration Testing</span>
+            <span class="chip hi">Post-Exploitation</span>
+            <span class="chip hi">Privilege Escalation</span>
+            <span class="chip">Web App Security</span>
+            <span class="chip">Network Enumeration</span>
+            <span class="chip">Packet Analysis</span>
+            <span class="chip">Container Security</span>
+            <span class="chip">Vulnerability Assessment</span>
+          </div>
+        </div>
+
+        <div class="rev">
+          <p class="skill-row-label">Web Vulnerabilities</p>
+          <div class="chips">
+            <span class="chip hi">SQL Injection</span>
+            <span class="chip hi">XSS</span>
+            <span class="chip hi">IDOR</span>
+            <span class="chip">OWASP Top 10</span>
+          </div>
+        </div>
+
+        <div class="rev">
+          <p class="skill-row-label">Dev &amp; Version Control</p>
+          <div class="chips">
+            <span class="chip">Git</span>
+            <span class="chip">GitHub</span>
+            <span class="chip">Linux CLI</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ EXPERIENCE ═══════════════════════ -->
+  <div class="div-line"></div>
+  <section id="experience">
+    <div class="wrap">
+      <div class="sec-label rev">03 — Experience</div>
+      <h2 class="sec-title rev">Work</h2>
+
+      <div class="tl">
+
+        <div class="tl-item rev">
+          <div class="tl-dot"></div>
+          <p class="tl-date">Sep 2025 — Present</p>
+          <p class="tl-role">Technical Team Member</p>
+          <p class="tl-org">GDG on Campus · Nirma University, Ahmedabad</p>
+          <ul class="tl-pts">
+            <li>Contributed to technical workshops, developer events, and knowledge-sharing sessions under Google
+              Developer Groups on Campus.</li>
+            <li>Drafted partnership proposals and managed sponsor outreach, demonstrating professional written
+              communication and stakeholder engagement.</li>
+          </ul>
+        </div>
+
+        <div class="tl-item rev">
+          <div class="tl-dot"></div>
+          <p class="tl-date">Jan 2025</p>
+          <p class="tl-role">Vulnerability Researcher (CTF)</p>
+          <p class="tl-org">BugCrowd Platform · India (Remote)</p>
+          <ul class="tl-pts">
+            <li>Identified and documented a security vulnerability as part of a structured bug bounty competition on
+              Bugcrowd.</li>
+            <li>Authored a formal vulnerability report covering reproduction steps, risk assessment, and remediation
+              recommendations — mirroring a real-world penetration testing deliverable.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROJECTS ══════════════════════════ -->
+  <div class="div-line"></div>
+  <section id="projects">
+    <div class="wrap">
+      <div class="sec-label rev">04 — Projects</div>
+      <h2 class="sec-title rev">Built</h2>
+
+      <div class="proj-grid">
+
+        <div class="proj-card rev">
+          <div class="proj-head">
+            <span class="proj-ico">[#]</span>
+            <span class="proj-date">Mar 2026 · v1.1.0</span>
+          </div>
+          <p class="proj-name">L.E.A.P. — Linux Enumeration &amp; Persistence Framework</p>
+          <p class="proj-desc">
+            A modular, stealthy Bash framework for post-exploitation enumeration, privilege escalation vectoring,
+            lateral movement, and C2 exfiltration on Linux systems. Features six core modules spanning recon through
+            cleanup — designed with operational security and detection avoidance at the forefront.
+          </p>
+          <div class="proj-tags">
+            <span class="proj-tag">Bash</span>
+            <span class="proj-tag">Reconnaissance</span>
+            <span class="proj-tag">Enumeration</span>
+            <span class="proj-tag">Network Auditing</span>
+            <span class="proj-tag">Container Context</span>
+            <span class="proj-tag">Exfiltration</span>
+            <span class="proj-tag">C2</span>
+            <span class="proj-tag">SUID/SGID</span>
+            <span class="proj-tag">Stealth</span>
+          </div>
+        </div>
+
+        <div class="proj-card rev">
+          <div class="proj-head">
+            <span class="proj-ico">[@]</span>
+            <span class="proj-date">Jan 2025</span>
+          </div>
+          <p class="proj-name">Bugcrowd Vulnerability Report</p>
+          <p class="proj-desc">
+            Formal security vulnerability research on the Bugcrowd platform. Produced a professional penetration testing
+            deliverable covering full reproduction steps, risk assessment, and remediation guidance — mirroring
+            real-world industry standards.
+          </p>
+          <div class="proj-tags">
+            <span class="proj-tag">Bug Bounty</span>
+            <span class="proj-tag">Vuln Research</span>
+            <span class="proj-tag">Report Writing</span>
+            <span class="proj-tag">Risk Assessment</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ACHIEVEMENTS ══════════════════════ -->
+  <div class="div-line"></div>
+  <section id="achievements">
+    <div class="wrap">
+      <div class="sec-label rev">05 — Recognition</div>
+      <h2 class="sec-title rev">Achievements</h2>
+
+      <div class="ach-grid">
+        <div class="ach-card rev">
+          <div class="ach-ico">🏆</div>
+          <div>
+            <p class="ach-title">AWS Skills to Job CTF — #125 Global</p>
+            <p class="ach-body">Ranked 125th globally, solving 20 of 37 challenges across Web Offensive, Forensics, and
+              Mixed Offensive categories. Awarded a 6-month SANS SkillQuest subscription.</p>
+          </div>
+        </div>
+        <div class="ach-card rev">
+          <div class="ach-ico">🎯</div>
+          <div>
+            <p class="ach-title">TryHackMe — Top 5% Globally</p>
+            <p class="ach-body">Ranked in the top 5% globally (Rank ~103,800) with 14 badges spanning offensive
+              security, networking, and forensics.</p>
+          </div>
+        </div>
+        <div class="ach-card rev">
+          <div class="ach-ico">📜</div>
+          <div>
+            <p class="ach-title">Jr Penetration Tester — TryHackMe</p>
+            <p class="ach-body">Completed the structured Jr Pen Tester path covering Metasploit, Burp Suite, network
+              exploitation, web attacks, and Linux privilege escalation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ EDUCATION ══════════════════════════ -->
+  <div class="div-line"></div>
+  <section id="education">
+    <div class="wrap">
+      <div class="sec-label rev">06 — Education</div>
+      <h2 class="sec-title rev">Academic</h2>
+
+      <div class="edu-card rev">
+        <div class="edu-badge">B.Tech<br>CSE</div>
+        <div>
+          <p class="edu-degree">B.Tech in Computer Science &amp; Engineering</p>
+          <p class="edu-uni">Nirma University · Ahmedabad, Gujarat</p>
+          <div class="edu-meta">
+            <span>GPA 8.35 / 10</span>
+            <span>2023 — Present</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="certs rev">
+        <div class="cert">
+          <span class="cert-tick">[✓]</span>
+          <span class="cert-name">Introduction to Cybersecurity</span>
+          <span class="cert-org">Cisco Networking Academy · May 2025</span>
+        </div>
+        <div class="cert">
+          <span class="cert-tick">[✓]</span>
+          <span class="cert-name">Networking Basics</span>
+          <span class="cert-org">Cisco Networking Academy · Jun 2025</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ════════════════════════════ -->
+  <div class="div-line"></div>
+  <section id="contact">
+    <div class="wrap">
+      <div class="sec-label rev">07 — Contact</div>
+      <h2 class="sec-title rev">Let's Talk</h2>
+
+      <p class="contact-sub rev">
+        Interested in offensive security, red team engineering, or vulnerability research?
+        Reach out — always happy to connect.
+      </p>
+
+      <div class="clinks rev">
+        <a href="mailto:bhattmanthan8@gmail.com" class="clink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          Email
+        </a>
+        <a href="https://www.linkedin.com/in/bhattmanthan1" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+            <rect x="2" y="9" width="4" height="12" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+          LinkedIn
+        </a>
+        <a href="https://github.com/bhattmanthan" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+          </svg>
+          GitHub
+        </a>
+      </div>
+
+      <div class="term rev">
+        <div class="term-bar">
+          <div class="td"></div>
+          <div class="td"></div>
+          <div class="td"></div>
+          <span class="term-title">contact.json</span>
+        </div>
+        <div class="term-body">
+          <div class="tline"><span class="p">$</span> cat contact.json</div>
+          <div class="tline">{</div>
+          <div class="tline"><span class="ind"><span class="k">"name"</span>:&nbsp;<span class="v">"Manthan
+                Bhatt"</span>,</span></div>
+          <div class="tline"><span class="ind"><span class="k">"role"</span>:&nbsp;<span class="v">"Cybersecurity
+                Engineer"</span>,</span></div>
+          <div class="tline"><span class="ind"><span class="k">"location"</span>:&nbsp;<span class="v">"Vadodara,
+                Gujarat, India"</span>,</span></div>
+          <div class="tline"><span class="ind"><span class="k">"email"</span>:&nbsp;<span
+                class="v">"bhattmanthan8@gmail.com"</span>,</span></div>
+          <div class="tline"><span class="ind"><span class="k">"available"</span>:&nbsp;<span
+                style="color:var(--green)">true</span></span></div>
+          <div class="tline">}</div>
+          <div class="tline" style="margin-top:.6rem"><span class="p">$</span>&nbsp;<span class="blink"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="div-line"></div>
+  <footer>
+    <span class="foot-l"><em>Manthan Bhatt</em> · Cybersecurity Engineer</span>
+    <span class="foot-r">Vadodara, Gujarat · 2026</span>
+  </footer>
+
+</body>
+
+</html>
