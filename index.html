@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Orbitron:wght@400;500;700;900&family=Syne:wght@400;600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script src="script.js" defer></script>
@@ -21,7 +21,7 @@
 
   <!-- ══ NAV ══════════════════════════════ -->
   <nav>
-    <div class="nav-logo">Manthan<em>.</em></div>
+    <div class="nav-logo">MB:SEC<em>//</em></div>
     <ul class="nav-links" id="navL">
       <li><a href="#about">About</a></li>
       <li><a href="#skills">Skills</a></li>
@@ -29,6 +29,8 @@
       <li><a href="#projects">Projects</a></li>
       <li><a href="#education">Education</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><a href="assets/resume.pdf" target="_blank" class="nav-resume" aria-label="Download Resume">[ RESUME ]</a>
+      </li>
     </ul>
     <button class="ham" id="ham" aria-label="Toggle menu">
       <span></span><span></span><span></span>
@@ -41,25 +43,35 @@
     <div class="hero-glow"></div>
 
     <div class="hero-inner">
-      <p class="hero-eyebrow">Cybersecurity Engineer</p>
+      <div class="hero-text">
+        <p class="hero-eyebrow">Cybersecurity Engineer</p>
 
-      <h1 class="hero-name">
-        Manthan
-        <span class="accent">Bhatt</span>
-      </h1>
+        <h1 class="hero-name">
+          Manthan
+          <span class="accent">Bhatt</span>
+        </h1>
 
-      <p class="hero-type-row">
-        <span class="prompt">$ role —&nbsp;</span><span id="typed"></span><span class="blink"></span>
-      </p>
+        <p class="hero-type-row">
+          <span class="prompt">$ role —&nbsp;</span><span id="typed"></span><span class="blink"></span>
+        </p>
 
-      <p class="hero-tagline">
-        Breaking systems ethically. Building defences that hold.<br>
-        Turning vulnerabilities into understanding before adversaries can weaponise them.
-      </p>
+        <p class="hero-tagline">
+          Breaking systems ethically. Building defences that hold.<br>
+          Turning vulnerabilities into understanding before adversaries can weaponise them.
+        </p>
 
-      <div class="hero-cta">
-        <a href="#contact" class="btn btn-solid">Initialize Contact</a>
-        <a href="#projects" class="btn btn-ghost">View Projects</a>
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-solid">Initialize Contact</a>
+          <a href="#projects" class="btn btn-ghost">View Projects</a>
+        </div>
+      </div>
+
+      <div class="hero-image-wrapper">
+        <div class="hero-image-glitch">
+          <img src="assets/profile.png" alt="Manthan Bhatt" id="profileImg"
+            onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22400%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23020805%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22monospace%22%20font-size%3D%2224%22%20fill%3D%22%230dff6e%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EPROFILE.JPG%3C%2Ftext%3E%3C%2Fsvg%3E'">
+          <div class="scanlines"></div>
+        </div>
       </div>
     </div>
 
@@ -338,12 +350,16 @@
       <div class="certs rev">
         <div class="cert">
           <span class="cert-tick">[✓]</span>
-          <span class="cert-name"><a href="https://www.credly.com/earner/earned/badge/fc4ffc80-7066-42ff-8e63-d7ade19976c3">Introduction to Cybersecurity</a></span>
+          <span class="cert-name"><a
+              href="https://www.credly.com/earner/earned/badge/fc4ffc80-7066-42ff-8e63-d7ade19976c3"
+              target="_blank">Introduction to Cybersecurity</a></span>
           <span class="cert-org">Cisco Networking Academy · May 2025</span>
         </div>
         <div class="cert">
           <span class="cert-tick">[✓]</span>
-          <span class="cert-name"><a href="https://www.credly.com/earner/earned/badge/13d8684a-2621-480e-9c61-18096579cce5">Networking Basics</a></span>
+          <span class="cert-name"><a
+              href="https://www.credly.com/earner/earned/badge/13d8684a-2621-480e-9c61-18096579cce5"
+              target="_blank">Networking Basics</a></span>
           <span class="cert-org">Cisco Networking Academy · Jun 2025</span>
         </div>
         <div class="cert">
@@ -399,21 +415,27 @@
           <div class="td"></div>
           <span class="term-title">contact.json</span>
         </div>
-        <div class="term-body">
-          <div class="tline"><span class="p">$</span> cat contact.json</div>
-          <div class="tline">{</div>
-          <div class="tline"><span class="ind"><span class="k">"name"</span>:&nbsp;<span class="v">"Manthan
-                Bhatt"</span>,</span></div>
-          <div class="tline"><span class="ind"><span class="k">"role"</span>:&nbsp;<span class="v">"Cybersecurity
-                Engineer"</span>,</span></div>
-          <div class="tline"><span class="ind"><span class="k">"location"</span>:&nbsp;<span class="v">"Vadodara,
-                Gujarat, India"</span>,</span></div>
-          <div class="tline"><span class="ind"><span class="k">"email"</span>:&nbsp;<span
-                class="v">"bhattmanthan8@gmail.com"</span>,</span></div>
-          <div class="tline"><span class="ind"><span class="k">"available"</span>:&nbsp;<span
-                style="color:var(--green)">true</span></span></div>
-          <div class="tline">}</div>
-          <div class="tline" style="margin-top:.6rem"><span class="p">$</span>&nbsp;<span class="blink"></span></div>
+        <div class="term-body" id="termBody">
+          <div id="termOutput">
+            <div class="tline"><span class="p">$</span> cat contact.json</div>
+            <div class="tline">{</div>
+            <div class="tline"><span class="ind"><span class="k">"name"</span>:&nbsp;<span class="v">"Manthan
+                  Bhatt"</span>,</span></div>
+            <div class="tline"><span class="ind"><span class="k">"role"</span>:&nbsp;<span class="v">"Cybersecurity
+                  Engineer"</span>,</span></div>
+            <div class="tline"><span class="ind"><span class="k">"location"</span>:&nbsp;<span class="v">"Vadodara,
+                  Gujarat, India"</span>,</span></div>
+            <div class="tline"><span class="ind"><span class="k">"email"</span>:&nbsp;<span
+                  class="v">"bhattmanthan8@gmail.com"</span>,</span></div>
+            <div class="tline"><span class="ind"><span class="k">"available"</span>:&nbsp;<span
+                  style="color:var(--green)">true</span></span></div>
+            <div class="tline">}</div>
+          </div>
+          <div class="tline" style="margin-top:.6rem; position:relative; cursor:text;" id="termInputWrapper">
+            <span class="p">$</span>&nbsp;<span id="termInputDisplay"></span><span class="blink"></span>
+            <input type="text" id="termHiddenInput" autocomplete="off" spellcheck="false" aria-label="Terminal Input"
+              style="opacity:0; position:absolute; left:-9999px;">
+          </div>
         </div>
       </div>
     </div>
