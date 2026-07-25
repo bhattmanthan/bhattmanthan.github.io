@@ -1,0 +1,56 @@
+.masthead {
+  border-bottom: 1px solid var(--ink);
+  padding: 18px 0;
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+  z-index: 100;
+  transition: background-color 0.3s ease;
+}
+
+.masthead-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.masthead-row strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.status-pill {
+  color: var(--stamp);
+  border: 1px solid var(--stamp);
+  padding: 2px 8px;
+  text-transform: uppercase;
+}
+
+.masthead-nav {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+.masthead-nav a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.masthead-nav a:hover, .masthead-nav a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}

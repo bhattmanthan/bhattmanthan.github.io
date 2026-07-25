@@ -1,0 +1,46 @@
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  min-width: 600px; /* Ensure table doesn't squish too much on mobile */
+}
+
+th {
+  text-align: left;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-muted);
+  font-size: 11px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ink);
+}
+
+td {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+td:first-child, th:first-child {
+  color: var(--ink);
+  font-weight: 500;
+  width: 32%;
+  padding-right: 16px;
+}
+
+td:nth-child(2), th:nth-child(2) {
+  width: 28%;
+  padding-right: 16px;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}

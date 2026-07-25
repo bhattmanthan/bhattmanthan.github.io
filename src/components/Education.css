@@ -1,0 +1,68 @@
+.edu-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 32px;
+}
+
+.edu-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edu-date {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--accent-muted);
+}
+
+.edu-title {
+  font-family: 'IBM Plex Serif', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.edu-desc {
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+.verification-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.verify-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.v-check {
+  color: var(--stamp);
+}
+
+.v-title {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.v-link a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 0.2s;
+}
+
+.v-link a:hover, .v-link a:focus-visible {
+  border-color: var(--ink);
+}

@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Light mode (paper) */
+  --paper: #F5F4F0;
+  --paper-dim: #ECEAE3;
+  --ink: #14151A;
+  --ink-soft: #4A4A47;
+  --line: #C9C7BE;
+  --stamp: #9C2B2B;
+  --accent-muted: #6B6455;
+}
+
+:root.dark {
+  /* Dark mode (photocopy) */
+  --paper: #1A1A18;
+  --paper-dim: #232320;
+  --ink: #EDEBE4;
+  --ink-soft: #A8A69C;
+  --line: #3A3935;
+  --stamp: #D4645F;
+  --accent-muted: #8C8778;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Redaction Effect */
+.redact {
+  background: var(--ink);
+  color: var(--ink);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color .35s ease, background .35s ease;
+  padding: 0 3px;
+}
+
+.redact:hover, .redact:focus-visible {
+  background: transparent;
+  color: var(--ink);
+  outline: 1px dashed var(--stamp);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
