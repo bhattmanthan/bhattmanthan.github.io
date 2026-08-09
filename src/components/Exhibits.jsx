@@ -9,7 +9,7 @@ export default function Exhibits() {
       stamp: "Public",
       desc: "Modular, stealthy Bash framework for post-exploitation enumeration, privilege escalation vectoring, container escape detection, and C2 exfiltration. Six modules spanning recon through cleanup.",
       stack: "Bash · v1.1.0",
-      link: "https://github.com/bhattmanthan/L.E.A.P."
+      link: "https://github.com/bhattmanthan/LEAP"
     },
     {
       id: "B",
