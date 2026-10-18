@@ -33,7 +33,7 @@ To run this project locally:
 ## Architecture
 
 - Built using **React + Vite** for fast HMR and optimized production builds.
-- CSS Modules / Custom Properties for scoped, themeable styling without heavy CSS frameworks.
+- Plain CSS with custom properties (design tokens) for themeable styling, no CSS framework.
 - Static assets (images, PDFs) served directly from the `public/` directory.
 
 ---

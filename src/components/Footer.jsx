@@ -18,7 +18,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="contact-links">
-          <a href="https://linkedin.com/in/bhattmanthan" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://linkedin.com/in/bhattmanthan1" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <a href="https://github.com/bhattmanthan" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://tryhackme.com/p/antisocialstare" target="_blank" rel="noopener noreferrer">TryHackMe</a>
           <a href="mailto:bhattmanthan8@gmail.com">Email</a>

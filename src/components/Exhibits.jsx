@@ -31,7 +31,15 @@ export default function Exhibits() {
       stamp: "In Testing",
       desc: "Intentionally vulnerable app chaining OWASP Top 10 into malware analysis and C2 traffic capture, built for an EHVA coursework assignment.",
       stack: "Node.js · Express · PostgreSQL",
-      link: "https://github.com/bhattmanthan/ExpenseFlow"
+      link: "https://github.com/bhattmanthan/expenseflow"
+    },
+    {
+      id: "E",
+      title: "resolve-prep",
+      stamp: "Public",
+      desc: "One-command Bash utility that finds the clips DaVinci Resolve Free on Linux cannot decode (H.264, HEVC, AAC), transcodes only those to DNxHR, verifies the result, and leaves everything else untouched.",
+      stack: "Bash · FFmpeg · MIT",
+      link: "https://github.com/bhattmanthan/resolve-prep"
     }
   ];
 
@@ -39,7 +47,7 @@ export default function Exhibits() {
     <section id="exhibits" className="section">
       <div className="section-head">
         <div className="section-title">Exhibits — Projects</div>
-        <div className="section-count">04 on file</div>
+        <div className="section-count">05 on file</div>
       </div>
       
       <div className="exhibits-grid">

@@ -11,7 +11,7 @@ export default function Education() {
 
       <div className="edu-entry">
         <div className="edu-meta">
-          <span className="edu-date">2023 — 2027</span>
+          <span className="edu-date">2024 — 2028</span>
           <span className="edu-title">B.Tech in Computer Science</span>
         </div>
         <p className="edu-desc">Nirma University, Ahmedabad · GPA: 8.2/10</p>

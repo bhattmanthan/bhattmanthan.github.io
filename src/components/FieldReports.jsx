@@ -4,6 +4,11 @@ import './FieldReports.css';
 export default function FieldReports() {
   const reports = [
     {
+      engagement: "Adani Innovation Mindstorm 2026 — CTF (Maya Jaal)",
+      result: "1st Runner-Up (team)",
+      notes: "National-level; ₹3,00,000 team prize; trophy presented by Adani Group Chairman. Listed by Nirma University CSE."
+    },
+    {
       engagement: "AWS Skills to Job CTF (SANS)",
       result: "125th global / 35th regional",
       notes: "20/37 challenges solved (Web Offensive, Forensics, Mixed Offensive); 6-month SANS SkillQuest access"
@@ -24,7 +29,7 @@ export default function FieldReports() {
     <section id="field-reports" className="section">
       <div className="section-head">
         <div className="section-title">Field Reports — Achievements</div>
-        <div className="section-count">03 logged</div>
+        <div className="section-count">04 logged</div>
       </div>
       
       <div className="table-wrapper">

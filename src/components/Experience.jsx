@@ -11,6 +11,16 @@ export default function Experience() {
       
       <div className="experience-item">
         <div className="exp-meta">
+          <span className="exp-date">Present</span>
+          <span className="exp-role">Technical Head, Cyber Security Club, Nirma University</span>
+        </div>
+        <p className="exp-desc">
+          Lead the club's technical programming. Delivered live attack demonstrations at HackVerse (Episode 3), making complex offensive-security concepts approachable for fellow students.
+        </p>
+      </div>
+
+      <div className="experience-item">
+        <div className="exp-meta">
           <span className="exp-date">Jan 2026 — Present</span>
           <span className="exp-role">Vulnerability Researcher, HackWithIndiaa VDP</span>
         </div>
