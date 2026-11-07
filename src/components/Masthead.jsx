@@ -20,6 +20,8 @@ export default function Masthead() {
         <span>·</span>
         <a href="#exhibits">Exhibits</a>
         <span>·</span>
+        <a href="#writeups">Write-Ups</a>
+        <span>·</span>
         <a href="#field-reports">Field Reports</a>
         <span>·</span>
         <a href="#education">Education</a>
