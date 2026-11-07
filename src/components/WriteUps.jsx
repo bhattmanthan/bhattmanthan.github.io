@@ -9,7 +9,7 @@ export default function WriteUps() {
       stamp: "Medium",
       desc: "Full Active Directory attack chain: Kerberos user enumeration, AS-REP Roasting a no-preauth service account, an SMB share leaking backup credentials, DCSync via DRSUAPI, and Pass-the-Hash to Administrator.",
       stack: "Kerberos · AS-REP Roasting · DCSync · Pass-the-Hash",
-      link: "https://github.com/bhattmanthan/bhattmanthan.github.io/blob/main/writeups/attacktive-directory.md"
+      link: "https://medium.com/@antisocialstare/tryhackme-attacktive-directory-writeup-a061dd62cedf"
     }
   ];
 
