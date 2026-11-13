@@ -10,6 +10,14 @@ export default function WriteUps() {
       desc: "Full Active Directory attack chain: Kerberos user enumeration, AS-REP Roasting a no-preauth service account, an SMB share leaking backup credentials, DCSync via DRSUAPI, and Pass-the-Hash to Administrator.",
       stack: "Kerberos · AS-REP Roasting · DCSync · Pass-the-Hash",
       link: "https://medium.com/@antisocialstare/tryhackme-attacktive-directory-writeup-a061dd62cedf"
+    },
+    {
+      id: "2",
+      title: "HackSmarter: Kitsune",
+      stamp: "Case File",
+      desc: "Six-hop AD compromise from an anonymous guest: cracked Password Safe vault, ADCS ESC13 into HelpDesk, GenericAll account takeover, DPAPI credential recovery, gMSA password read and Backup Operators to DCSync.",
+      stack: "ADCS ESC13 · DPAPI · gMSA · Backup Operators",
+      link: "/writeups/kitsune/"
     }
   ];
 
@@ -22,7 +30,7 @@ export default function WriteUps() {
 
       <div className="exhibits-grid">
         {writeups.map(wu => (
-          <a href={wu.link} target="_blank" rel="noopener noreferrer" className="exhibit is-link" key={wu.id}>
+          <a href={wu.link} {...(wu.link.startsWith('http') && { target: "_blank", rel: "noopener noreferrer" })} className="exhibit is-link" key={wu.id}>
             <span className="stamp-mark">{wu.stamp}</span>
             <div className="exhibit-tag">
               <span>Case {wu.id}</span>

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitsune Case File — Manthan Bhatt</title>
+<meta name="description" content="HackSmarter Kitsune: six-hop Active Directory compromise from an anonymous guest to Domain Admin via ADCS ESC13, DPAPI, gMSA and Backup Operators.">
+<meta property="og:title" content="HackSmarter: Kitsune — Case File">
+<meta property="og:description" content="Guest SMB → ESC13 → password reset → DPAPI → gMSA → Backup Operators → Domain Admin.">
+<meta property="og:image" content="/og-image.png">
+<link rel="icon" href="/favicon.svg">
+<script>
+  // same theme logic as the main site's ThemeToggle
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+  } catch (e) {}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5F4F0;--paper-dim:#ECEAE3;--ink:#14151A;--ink-soft:#4A4A47;--line:#C9C7BE;--stamp:#9C2B2B;--accent-muted:#6B6455}
+:root.dark{--paper:#1A1A18;--paper-dim:#232320;--ink:#EDEBE4;--ink-soft:#A8A69C;--line:#3A3935;--stamp:#D4645F;--accent-muted:#8C8778}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;line-height:1.6;transition:background-color .3s,color .3s}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+.mono{font-family:'IBM Plex Mono',monospace}
+code{font-family:'IBM Plex Mono',monospace;font-size:.86em;background:var(--paper-dim);padding:1px 5px;word-break:break-word}
+pre{background:var(--paper-dim);border:1px solid var(--line);padding:14px 16px;overflow-x:auto;margin:12px 0;font-size:12.5px;line-height:1.6}
+pre code{background:none;padding:0;font-size:inherit}
+.dim{color:var(--accent-muted)}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.top a{text-decoration:none;color:var(--ink-soft)} .top a:hover{color:var(--ink)}
+.top button{background:none;border:0;color:var(--ink-soft);font:inherit;letter-spacing:inherit;cursor:pointer}
+
+/* header */
+header{padding:56px 0 36px;border-bottom:1px solid var(--line);position:relative}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-muted)}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(30px,5vw,46px);line-height:1.15;margin:14px 0 14px;max-width:78%}
+.lede{color:var(--ink-soft);font-size:17px;max-width:640px}
+.stamp{position:absolute;top:58px;right:0;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--stamp);border:2px solid var(--stamp);padding:6px 12px;transform:rotate(5deg);text-transform:uppercase;opacity:.9;text-align:center;line-height:1.4}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-top:32px}
+.meta div{padding:12px 14px;border-right:1px solid var(--line)} .meta div:last-child{border-right:0}
+.meta b{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-muted);font-weight:500}
+.meta span{font-size:14px}
+
+/* sections */
+section{padding:48px 0;border-bottom:1px solid var(--line)}
+h2{font-family:'IBM Plex Serif',serif;font-size:24px;font-weight:600;margin-bottom:18px;display:flex;gap:14px;align-items:baseline}
+h2 .n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--stamp);letter-spacing:.1em}
+h3{font-family:'IBM Plex Serif',serif;font-size:19px;font-weight:600;margin:34px 0 12px}
+p{color:var(--ink-soft);margin:10px 0} p strong,li strong{color:var(--ink)}
+ul{padding-left:20px;color:var(--ink-soft)} li{margin:6px 0}
+
+/* chain */
+.chain{display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin:8px 0 28px;align-items:stretch}
+.node{border:1px solid var(--line);padding:12px 8px;text-align:center;position:relative;background:var(--paper)}
+.node+.node{border-left:0}
+.node b{display:block;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);word-break:break-all}
+.node i{display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-muted);margin-top:6px}
+.node.end{background:var(--ink)} .node.end b{color:var(--paper)} .node.end i{color:var(--paper);opacity:.7}
+.node:not(:last-child)::after{content:"→";position:absolute;right:-8px;top:50%;transform:translateY(-50%);background:var(--paper);color:var(--stamp);font-size:13px;z-index:1;line-height:1}
+
+/* tables */
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-muted);text-align:left;border-bottom:1.5px solid var(--ink);padding:9px 10px;font-weight:500;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:9px 10px;color:var(--ink-soft);vertical-align:top}
+td:first-child{color:var(--ink)}
+.ok{color:var(--stamp);font-family:'IBM Plex Mono',monospace;font-size:12px}
+
+/* reasoning loop */
+.loop{border:1px solid var(--line);margin:14px 0}
+.loop>div{display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--line)}
+.loop>div:last-child{border-bottom:0}
+.loop dt{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-muted);padding:12px 14px;background:var(--paper-dim);border-right:1px solid var(--line)}
+.loop dd{padding:12px 14px;color:var(--ink-soft);font-size:15px;min-width:0}
+.loop dd pre{margin:6px 0 2px}
+.loop .res dt{color:var(--stamp)}
+
+.note{border-left:2px solid var(--stamp);background:var(--paper-dim);padding:12px 16px;margin:16px 0;font-size:15px;color:var(--ink-soft)}
+.note b{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--stamp);display:block;margin-bottom:4px;font-weight:500}
+
+figure{margin:20px 0;border:1px solid var(--line);background:var(--paper-dim)}
+figure img{display:block;width:100%;height:auto}
+figcaption{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--accent-muted);padding:8px 12px;border-top:1px solid var(--line);text-transform:uppercase}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.tags span{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em;border:1px solid var(--line);padding:4px 10px;color:var(--ink-soft)}
+footer{padding:32px 0 56px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media (max-width:720px){
+  h1{max-width:100%}
+  .stamp{position:static;display:inline-block;margin-bottom:6px}
+  .meta{grid-template-columns:1fr 1fr} .meta div:nth-child(2){border-right:0} .meta div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .chain{grid-template-columns:1fr}
+  .node+.node{border-left:1px solid var(--line);border-top:0}
+  .node:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-8px;transform:translateX(-50%)}
+  .loop>div{grid-template-columns:1fr} .loop dt{border-right:0;border-bottom:1px solid var(--line);padding:8px 14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="top">
+  <a href="/#writeups">← Case files</a>
+  <button id="theme" aria-label="Toggle dark mode">[LIGHT]</button>
+</nav>
+
+<header>
+  <div class="stamp">Closed<br>Domain Admin</div>
+  <div class="kicker">Case 02 · HackSmarter · Active Directory</div>
+  <h1>Kitsune: from an anonymous guest to Domain Admin</h1>
+  <p class="lede">A single Domain Controller compromised through six identity hops. None of the misconfigurations is critical alone, but each one hands over the next account.</p>
+  <div class="meta">
+    <div><b>Platform</b><span><a href="https://www.hacksmarter.org/courses/18750016-6295-476e-a697-50d7f892ccb8" target="_blank" rel="noopener noreferrer">HackSmarter ↗</a></span></div>
+    <div><b>Scope</b><span>Black-box · Easy</span></div>
+    <div><b>Target</b><span class="mono" style="font-size:13px">DC01.kitsune.local</span></div>
+    <div><b>Outcome</b><span>Full domain compromise</span></div>
+  </div>
+</header>
+
+<section id="summary">
+  <h2><span class="n">01</span>Executive summary</h2>
+  <div class="chain" aria-label="Attack chain">
+    <div class="node"><b>guest</b><i>start</i></div>
+    <div class="node"><b>ranch</b><i>vault crack</i></div>
+    <div class="node"><b>HelpDesk</b><i>ESC13</i></div>
+    <div class="node"><b>schlop</b><i>pwd reset</i></div>
+    <div class="node"><b>pebble</b><i>DPAPI</i></div>
+    <div class="node"><b>svc_gmsa$</b><i>gMSA read</i></div>
+    <div class="node end"><b>Admin</b><i>Backup Ops</i></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>From → To</th><th>Technique</th><th>Misconfiguration</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>anonymous → <b>ranch</b></td><td>Guest SMB, crack Password Safe vault</td><td>Guest enabled; vault on a readable share; weak master password</td></tr>
+      <tr><td>2</td><td>ranch → <b>HelpDesk</b></td><td>ADCS ESC13</td><td>Domain Users can enroll in a template whose issuance policy is linked to a group</td></tr>
+      <tr><td>3</td><td>HelpDesk → <b>schlop</b></td><td>GenericAll → password reset</td><td>HelpDesk holds GenericAll over a user object</td></tr>
+      <tr><td>4</td><td>schlop → <b>pebble</b></td><td>DPAPI <code>PSCredential</code> decryption</td><td>Saved credential file in a user profile</td></tr>
+      <tr><td>5</td><td>pebble → <b>svc_gmsa$</b></td><td>gMSA password read over LDAP</td><td><code>IT</code> group can read a privileged gMSA's password</td></tr>
+      <tr><td>6</td><td>svc_gmsa$ → <b>Administrator</b></td><td>Backup Operators → hive dump → DCSync</td><td>Service account in Backup Operators on a DC</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="method">
+  <h2><span class="n">02</span>Methodology</h2>
+  <p>Each phase follows the same loop: <strong>what I knew → what I hypothesised → what I ran → what it told me</strong>. Dead ends stay in, because ruling things out is part of the method.</p>
+
+  <h3>Phase 1 · Recon</h3>
+  <dl class="loop">
+    <div><dt>Known</dt><dd>Black-box: one IP and a VPN connection. No credentials, no hints.</dd></div>
+    <div><dt>Action</dt><dd><code>rustscan</code> reported the host down (ICMP filtered over the VPN), so I re-ran with host discovery disabled.<pre><code>nmap -sC -sV -Pn &lt;target&gt;</code></pre></dd></div>
+    <div class="res"><dt>Result</dt><dd>53, 88, 135, 139, 389, 445, 464, 636, 3268/9, 3389, 5985 → a Domain Controller. Windows Server 2025, SMB signing on, <strong>LDAP signing enforced</strong>.</dd></div>
+  </dl>
+
+  <h3>Phase 2 · Unauthenticated access</h3>
+  <dl class="loop">
+    <div><dt>Hypothesis</dt><dd>A DC with no creds usually leaks something through null/guest SMB, Kerberos user enumeration or AS-REP roasting.</dd></div>
+    <div><dt>Action</dt><dd>
+      <ul>
+        <li>Null SMB → allowed.</li>
+        <li><code>kerbrute userenum</code> → only <code>administrator</code>. <code>guest</code> returned <code>KDC_ERR_ETYPE_NOSUPP</code>, an etype mismatch, <em>not</em> proof the account is dead.</li>
+        <li>AS-REP roast <code>administrator</code> → pre-auth required.</li>
+        <li><code>nxc smb -u guest -p ''</code> → <strong>works</strong>. READ on the non-default <code>Files</code> share.</li>
+      </ul></dd></div>
+    <div class="res"><dt>Result</dt><dd><code>Files</code> contained <code>logins.psafe3</code>, a Password Safe v3 vault.</dd></div>
+  </dl>
+
+  <h3>Phase 3 · Credential access: the vault</h3>
+  <pre><code>hashcat -m 5200 logins.psafe3 rockyou.txt      # master password: hellokitty</code></pre>
+  <p>Three entries: <code>admin</code>, <code>ranch</code>, <code>root</code>. Validated against the DC, <code>admin</code> and <code>root</code> logged on as <code>(Guest)</code>, meaning the domain doesn't know them. <strong>Only <code>ranch</code> was real.</strong></p>
+  <div class="note"><b>Analyst note</b>NetExec prints a green <code>[+]</code> even for guest-mapped logons. Reading the <code>(Guest)</code> suffix saved chasing two decoy credentials.</div>
+
+  <h3>Phase 4 · Domain enumeration as ranch</h3>
+  <p>BloodHound collection took three attempts: <code>nxc --bloodhound</code> hit a TLS timeout, <code>rusthound-ce</code> over 389 was refused (signing enforced), and <strong><code>rusthound-ce --ldaps</code></strong> worked: 10 users, 65 groups, 34 certificate templates.</p>
+  <figure><img src="img/03-bloodhound-ranch-enroll-rights.png" alt="BloodHound graph showing ranch's certificate enrollment rights" loading="lazy"><figcaption>Fig. 1 · ranch and its certificate enrollment rights</figcaption></figure>
+  <p>With a certificate authority (<code>kitsune-DC01-CA</code>) and 34 templates in the data, ADCS was next:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Template</th><th>Client auth</th><th>Enroll</th><th>Min key</th><th>Issuance policy linked to</th></tr></thead>
+    <tbody><tr><td><code>Kitsune-User</code></td><td>Yes</td><td>Domain Users, Domain Admins</td><td>4096</td><td><code>CN=HelpDesk,CN=Users,…</code></td></tr></tbody>
+  </table></div>
+  <p><strong>ESC13:</strong> anyone who authenticates with this certificate gets <code>HelpDesk</code> in their Kerberos ticket. It grants a group, not admin, so what it's worth depends on what HelpDesk can do.</p>
+
+  <h3>Phase 5 · Exploiting ESC13 (and a network-layer detour)</h3>
+  <p>The first request failed with <code>CERTSRV_E_KEY_LENGTH</code> (the template enforces 4096-bit keys), fixed with <code>-key-size 4096</code>. After that, every request hung after opening <code>\pipe\cert</code> while SMB, LDAP and Kerberos all worked normally. I worked through hypotheses in order:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Hypothesis</th><th>Test</th><th>Outcome</th></tr></thead>
+    <tbody>
+      <tr><td>Lab instance fault</td><td>Full reset, new IP</td><td>No change</td></tr>
+      <tr><td>PMTU black hole</td><td>DF pings: 1400 B dropped, 1300 B OK → tunnel MTU 1000 / 800</td><td>No change</td></tr>
+      <tr><td>UDP transport</td><td>OpenVPN over TCP</td><td>No change</td></tr>
+      <tr><td>PMTUD failure</td><td>MSS clamp 1200, <code>tcp_mtu_probing=2</code></td><td>No change</td></tr>
+      <tr><td>Tooling bug</td><td>Raw impacket in place of certipy</td><td>No change</td></tr>
+      <tr><td>Alternate path avoiding RPC</td><td>BloodHound: Shadow Credentials or any ACL edge from ranch</td><td>Zero outbound edges</td></tr>
+      <tr><td>Local enrollment</td><td>WinRM / RDP as ranch</td><td>No access</td></tr>
+      <tr><td><strong>Local network</strong></td><td>Switched to a different network</td><td><span class="ok">✓ Worked first try</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>One clue pointed away from MTU early: the failure alternated between the CSR write and the response read, which a fixed-size black hole wouldn't do. Platform support confirmed their side was healthy, and it was. The problem was my local network.</p>
+  <pre><code>certipy req  -u ranch -p '&lt;pw&gt;' -dc-ip &lt;dc&gt; -ca kitsune-DC01-CA -template Kitsune-User -key-size 4096
+certipy auth -pfx ranch.pfx -dc-ip &lt;dc&gt;      # PKINIT → TGT carrying HelpDesk</code></pre>
+  <div class="note"><b>Takeaway</b>Isolate the network path before tuning protocol parameters. Swapping networks is a five-minute test that would have saved hours.</div>
+
+  <h3>Phase 6 · Lateral movement: ranch → schlop</h3>
+  <dl class="loop">
+    <div><dt>Hypothesis</dt><dd>The new ticket might allow DCSync or remote exec.</dd></div>
+    <div><dt>Action</dt><dd><code>--ntds</code>, psexec, wmiexec, smbexec: all denied. HelpDesk isn't an admin group. A better question was <em>what can HelpDesk write to?</em><pre><code>bloodyad -d kitsune.local -u ranch --host DC01.kitsune.local -k get writable --right ALL --detail</code></pre></dd></div>
+    <div class="res"><dt>Result</dt><dd>Write access to 300+ attributes on <strong><code>schlop</code></strong>, including <code>unicodePwd</code>, <code>msDS-KeyCredentialLink</code> and <code>servicePrincipalName</code>. The BloodHound data shows why: HelpDesk (which has no members, so ESC13 is the only way in) holds <strong>GenericAll</strong> on schlop. Password reset with bloodyAD → <code>evil-winrm</code> (schlop is in Remote Management Users). <strong>User flag.</strong></dd></div>
+  </dl>
+
+  <h3>Phase 7 · schlop → pebble (DPAPI)</h3>
+  <figure><img src="img/04-winrm-schlop-networkauth-cred.png" alt="Evil-WinRM session listing networkAuth.cred in schlop's Documents" loading="lazy"><figcaption>Fig. 2 · networkAuth.cred in schlop's profile</figcaption></figure>
+  <p><code>networkAuth.cred</code> is an <code>Export-Clixml</code> <code>PSCredential</code>, encrypted with schlop's DPAPI key. You can't decrypt it offline without the master key, but inside schlop's own session Windows decrypts it automatically:</p>
+  <pre><code>(Import-Clixml .\networkAuth.cred).GetNetworkCredential().Password    # → pebble</code></pre>
+
+  <h3>Phase 8 · pebble → svc_gmsa$ (gMSA read)</h3>
+  <dl class="loop">
+    <div><dt>Known</dt><dd>WinRM as pebble → <code>WinRMAuthorizationError</code>. Valid creds, no shell.</dd></div>
+    <div><dt>Hypothesis</dt><dd>An account with no shell can still hold privileges that LDAP exposes.</dd></div>
+    <div class="res"><dt>Result</dt><dd><pre><code>nxc ldap &lt;dc&gt; -u pebble -p '&lt;pw&gt;' --gmsa
+# svc_gmsa$  NTLM: &lt;hash&gt;   PrincipalsAllowedToReadPassword: IT</code></pre>pebble is a member of <code>IT</code>, so the read is allowed.</dd></div>
+  </dl>
+  <figure><img src="img/07-bloodhound-gmsa-backup-operators.png" alt="BloodHound graph showing svc_gmsa$ membership in Backup Operators" loading="lazy"><figcaption>Fig. 3 · svc_gmsa$ → member of Backup Operators</figcaption></figure>
+
+  <h3>Phase 9 · Domain compromise</h3>
+  <pre><code>nxc smb &lt;dc&gt; -u 'svc_gmsa$' -H '&lt;hash&gt;' -M backup_operator</code></pre>
+  <p>Backup privilege → <code>SAM</code> + <code>SECURITY</code> hives (boot key read live) → <code>DC01$</code> machine hash → DRSUAPI replication → <code>Administrator</code> NT hash → <code>evil-winrm -H</code>.</p>
+  <figure><img src="img/08-administrator-root-flag-redacted.png" alt="Administrator shell reading root.txt, flag redacted" loading="lazy"><figcaption>Fig. 4 · Administrator on DC01 (flag redacted)</figcaption></figure>
+</section>
+
+<section id="attack">
+  <h2><span class="n">03</span>MITRE ATT&amp;CK mapping</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Technique</th><th>ID</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Network Service Discovery</td><td class="mono">T1046</td><td>nmap</td></tr>
+      <tr><td>Domain Account Discovery</td><td class="mono">T1087.002</td><td>kerbrute, rusthound-ce</td></tr>
+      <tr><td>Valid Accounts: Default Accounts</td><td class="mono">T1078.001</td><td>Guest over SMB</td></tr>
+      <tr><td>Data from Network Shared Drive</td><td class="mono">T1039</td><td><code>logins.psafe3</code></td></tr>
+      <tr><td>Credentials from Password Managers</td><td class="mono">T1555.005</td><td>Vault crack</td></tr>
+      <tr><td>Steal or Forge Authentication Certificates</td><td class="mono">T1649</td><td>ESC13</td></tr>
+      <tr><td>Account Manipulation</td><td class="mono">T1098</td><td>schlop password reset</td></tr>
+      <tr><td>Remote Services: WinRM</td><td class="mono">T1021.006</td><td>evil-winrm</td></tr>
+      <tr><td>Credentials from Password Stores</td><td class="mono">T1555</td><td>DPAPI <code>PSCredential</code></td></tr>
+      <tr><td>OS Credential Dumping: SAM / LSA Secrets</td><td class="mono">T1003.002 / .004</td><td>backup_operator hive dump</td></tr>
+      <tr><td>OS Credential Dumping: DCSync</td><td class="mono">T1003.006</td><td>DRSUAPI via <code>DC01$</code></td></tr>
+      <tr><td>Use Alternate Auth Material: Pass the Hash</td><td class="mono">T1550.002</td><td>Administrator logon</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="remediation">
+  <h2><span class="n">04</span>Root causes &amp; remediation</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Finding</th><th>Risk</th><th>Remediation</th></tr></thead>
+    <tbody>
+      <tr><td>Guest / anonymous SMB enabled</td><td>Unauthenticated file access</td><td>Disable Guest; restrict null sessions</td></tr>
+      <tr><td>Password vault on a world-readable share</td><td>Credential exposure</td><td>Move to a managed secrets platform; enforce a strong master password</td></tr>
+      <tr><td>ESC13 on <code>Kitsune-User</code></td><td>Any user gains HelpDesk</td><td>Remove the OID-to-group link or restrict enrollment</td></tr>
+      <tr><td>HelpDesk GenericAll on a user</td><td>Arbitrary account takeover</td><td>Delegate reset-password only, scoped to an OU; audit ACLs</td></tr>
+      <tr><td><code>PSCredential</code> file in a profile</td><td>Credential reuse</td><td>Use gMSA or a vault for automation, not <code>Export-Clixml</code></td></tr>
+      <tr><td><code>IT</code> can read a privileged gMSA</td><td>Service account takeover</td><td>Limit <code>PrincipalsAllowedToReadPassword</code> to the hosts that run the service</td></tr>
+      <tr><td>Service account in Backup Operators</td><td>Tier-0 equivalent on a DC</td><td>Remove it; treat Backup Operators as tier-0 and alert on membership changes</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="lessons">
+  <h2><span class="n">05</span>Lessons</h2>
+  <ul>
+    <li><strong>Always test guest and blank creds.</strong> Kerbrute made guest look useless; over SMB it was the whole foothold.</li>
+    <li><strong>Read the whole output line.</strong> <code>(Guest)</code> after a green <code>[+]</code> means the login didn't really work.</li>
+    <li><strong>ESC13 grants a group, not admin.</strong> Follow it with writable-object enumeration.</li>
+    <li><strong>A failed shell isn't a dead account.</strong> pebble had no WinRM, but it could read a gMSA password, and that led to Domain Admin.</li>
+    <li><strong>Rule out your own network first.</strong> If one protocol hangs while others work, switch networks before tuning MTU.</li>
+  </ul>
+  <h3>Skills demonstrated</h3>
+  <div class="tags">
+    <span>AD enumeration</span><span>BloodHound</span><span>Certipy · ESC13</span><span>PKINIT</span><span>bloodyAD · ACL abuse</span><span>DPAPI</span><span>gMSA abuse</span><span>Backup Operators</span><span>DCSync</span><span>hashcat</span><span>Network troubleshooting</span><span>Remediation</span>
+  </div>
+</section>
+
+<footer>
+  <span>Flags, secrets and hashes redacted.</span>
+  <a href="/#writeups">← Back to case files</a>
+</footer>
+
+</div>
+<script>
+  var b = document.getElementById('theme'), r = document.documentElement;
+  function label(){ b.textContent = r.classList.contains('dark') ? '[DARK]' : '[LIGHT]'; }
+  label();
+  b.onclick = function(){ var d = r.classList.toggle('dark'); try { localStorage.setItem('theme', d ? 'dark' : 'light'); } catch(e){} label(); };
+</script>
+</body>
+</html>
