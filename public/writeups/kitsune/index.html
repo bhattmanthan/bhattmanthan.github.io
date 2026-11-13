@@ -175,7 +175,7 @@ footer{padding:32px 0 56px;font-family:'IBM Plex Mono',monospace;font-size:12px;
   </dl>
 
   <h3>Phase 3 · Credential access: the vault</h3>
-  <pre><code>hashcat -m 5200 logins.psafe3 rockyou.txt      # master password: hellokitty</code></pre>
+  <pre><code>hashcat -m 5200 logins.psafe3 rockyou.txt      # master password recovered from rockyou</code></pre>
   <p>Three entries: <code>admin</code>, <code>ranch</code>, <code>root</code>. Validated against the DC, <code>admin</code> and <code>root</code> logged on as <code>(Guest)</code>, meaning the domain doesn't know them. <strong>Only <code>ranch</code> was real.</strong></p>
   <div class="note"><b>Analyst note</b>NetExec prints a green <code>[+]</code> even for guest-mapped logons. Reading the <code>(Guest)</code> suffix saved chasing two decoy credentials.</div>
 
