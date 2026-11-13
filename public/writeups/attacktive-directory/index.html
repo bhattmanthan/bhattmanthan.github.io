@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attacktive Directory Case File — Manthan Bhatt</title>
+<meta name="description" content="TryHackMe Attacktive Directory: Kerberos user enumeration, AS-REP roasting, credentials in an SMB share, DCSync and pass-the-hash to Administrator.">
+<meta property="og:title" content="TryHackMe: Attacktive Directory — Case File">
+<meta property="og:description" content="Kerbrute → AS-REP roast → SMB share → DCSync → pass-the-hash.">
+<meta property="og:image" content="/og-image.png">
+<link rel="icon" href="/favicon.svg">
+<script>
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+  } catch (e) {}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5F4F0;--paper-dim:#ECEAE3;--ink:#14151A;--ink-soft:#4A4A47;--line:#C9C7BE;--stamp:#9C2B2B;--accent-muted:#6B6455}
+:root.dark{--paper:#1A1A18;--paper-dim:#232320;--ink:#EDEBE4;--ink-soft:#A8A69C;--line:#3A3935;--stamp:#D4645F;--accent-muted:#8C8778}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;line-height:1.6;transition:background-color .3s,color .3s}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+.mono{font-family:'IBM Plex Mono',monospace}
+code{font-family:'IBM Plex Mono',monospace;font-size:.86em;background:var(--paper-dim);padding:1px 5px;word-break:break-word}
+pre{background:var(--paper-dim);border:1px solid var(--line);padding:14px 16px;overflow-x:auto;margin:12px 0;font-size:12.5px;line-height:1.6}
+pre code{background:none;padding:0;font-size:inherit}
+.dim{color:var(--accent-muted)}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.top a{text-decoration:none;color:var(--ink-soft)} .top a:hover{color:var(--ink)}
+.top button{background:none;border:0;color:var(--ink-soft);font:inherit;letter-spacing:inherit;cursor:pointer}
+
+/* header */
+header{padding:56px 0 36px;border-bottom:1px solid var(--line);position:relative}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-muted)}
+h1{font-family:'IBM Plex Serif',serif;font-size:clamp(30px,5vw,46px);line-height:1.15;margin:14px 0 14px;max-width:78%}
+.lede{color:var(--ink-soft);font-size:17px;max-width:640px}
+.stamp{position:absolute;top:58px;right:0;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--stamp);border:2px solid var(--stamp);padding:6px 12px;transform:rotate(5deg);text-transform:uppercase;opacity:.9;text-align:center;line-height:1.4}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-top:32px}
+.meta div{padding:12px 14px;border-right:1px solid var(--line)} .meta div:last-child{border-right:0}
+.meta b{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-muted);font-weight:500}
+.meta span{font-size:14px}
+
+/* sections */
+section{padding:48px 0;border-bottom:1px solid var(--line)}
+h2{font-family:'IBM Plex Serif',serif;font-size:24px;font-weight:600;margin-bottom:18px;display:flex;gap:14px;align-items:baseline}
+h2 .n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--stamp);letter-spacing:.1em}
+h3{font-family:'IBM Plex Serif',serif;font-size:19px;font-weight:600;margin:34px 0 12px}
+p{color:var(--ink-soft);margin:10px 0} p strong,li strong{color:var(--ink)}
+ul{padding-left:20px;color:var(--ink-soft)} li{margin:6px 0}
+
+/* chain */
+.chain{display:grid;grid-template-columns:repeat(7,1fr);gap:0;margin:8px 0 28px;align-items:stretch}
+.node{border:1px solid var(--line);padding:12px 8px;text-align:center;position:relative;background:var(--paper)}
+.node+.node{border-left:0}
+.node b{display:block;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);word-break:break-all}
+.node i{display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-muted);margin-top:6px}
+.node.end{background:var(--ink)} .node.end b{color:var(--paper)} .node.end i{color:var(--paper);opacity:.7}
+.node:not(:last-child)::after{content:"→";position:absolute;right:-8px;top:50%;transform:translateY(-50%);background:var(--paper);color:var(--stamp);font-size:13px;z-index:1;line-height:1}
+
+/* tables */
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-muted);text-align:left;border-bottom:1.5px solid var(--ink);padding:9px 10px;font-weight:500;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:9px 10px;color:var(--ink-soft);vertical-align:top}
+td:first-child{color:var(--ink)}
+.ok{color:var(--stamp);font-family:'IBM Plex Mono',monospace;font-size:12px}
+
+/* reasoning loop */
+.loop{border:1px solid var(--line);margin:14px 0}
+.loop>div{display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--line)}
+.loop>div:last-child{border-bottom:0}
+.loop dt{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-muted);padding:12px 14px;background:var(--paper-dim);border-right:1px solid var(--line)}
+.loop dd{padding:12px 14px;color:var(--ink-soft);font-size:15px;min-width:0}
+.loop dd pre{margin:6px 0 2px}
+.loop .res dt{color:var(--stamp)}
+
+.note{border-left:2px solid var(--stamp);background:var(--paper-dim);padding:12px 16px;margin:16px 0;font-size:15px;color:var(--ink-soft)}
+.note b{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--stamp);display:block;margin-bottom:4px;font-weight:500}
+
+figure{margin:20px 0;border:1px solid var(--line);background:var(--paper-dim)}
+figure img{display:block;width:100%;height:auto}
+figcaption{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--accent-muted);padding:8px 12px;border-top:1px solid var(--line);text-transform:uppercase}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.tags span{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em;border:1px solid var(--line);padding:4px 10px;color:var(--ink-soft)}
+footer{padding:32px 0 56px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media (max-width:720px){
+  h1{max-width:100%}
+  .stamp{position:static;display:inline-block;margin-bottom:6px}
+  .meta{grid-template-columns:1fr 1fr} .meta div:nth-child(2){border-right:0} .meta div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .chain{grid-template-columns:1fr}
+  .node+.node{border-left:1px solid var(--line);border-top:0}
+  .node:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-8px;transform:translateX(-50%)}
+  .loop>div{grid-template-columns:1fr} .loop dt{border-right:0;border-bottom:1px solid var(--line);padding:8px 14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (min-width:721px){.chain.c5{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="top">
+  <a href="/#writeups">← Case files</a>
+  <button id="theme" aria-label="Toggle dark mode">[LIGHT]</button>
+</nav>
+
+<header>
+  <div class="stamp">Closed<br>Domain Admin</div>
+  <div class="kicker">Case 01 · TryHackMe · Active Directory</div>
+  <h1>Attacktive Directory: AS-REP roast to DCSync</h1>
+  <p class="lede">A guided room on a single Domain Controller. One account without Kerberos pre-auth leads to a readable share, a backup account with replication rights, and every hash in the domain.</p>
+  <p class="dim" style="font-size:13.5px;margin-top:14px">Written with the help of AI from my own engagement notes. <a href="notes.html">Read the raw, unedited notes →</a> · <a href="https://medium.com/@antisocialstare/tryhackme-attacktive-directory-writeup-a061dd62cedf" target="_blank" rel="noopener noreferrer">Read the story on Medium ↗</a></p>
+  <div class="meta">
+    <div><b>Platform</b><span><a href="https://tryhackme.com/room/attacktivedirectory" target="_blank" rel="noopener noreferrer">TryHackMe ↗</a></span></div>
+    <div><b>Scope</b><span>Guided · Medium</span></div>
+    <div><b>Target</b><span class="mono" style="font-size:13px">spookysec.local</span></div>
+    <div><b>Outcome</b><span>Full domain compromise</span></div>
+  </div>
+</header>
+
+<section id="summary">
+  <h2><span class="n">01</span>Executive summary</h2>
+  <div class="chain c5" aria-label="Attack chain">
+    <div class="node"><b>no creds</b><i>start</i></div>
+    <div class="node"><b>svc-admin</b><i>AS-REP roast</i></div>
+    <div class="node"><b>backup</b><i>SMB share</i></div>
+    <div class="node"><b>all hashes</b><i>DCSync</i></div>
+    <div class="node end"><b>Admin</b><i>pass-the-hash</i></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>From → To</th><th>Technique</th><th>Misconfiguration</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>anonymous → <b>svc-admin</b></td><td>Kerberos user enum, AS-REP roast, offline crack</td><td>Pre-auth disabled on <code>svc-admin</code>; crackable password</td></tr>
+      <tr><td>2</td><td>svc-admin → <b>backup</b></td><td>Read <code>backup</code> share, decode base64</td><td>Credentials stored in a share, base64 is not encryption</td></tr>
+      <tr><td>3</td><td>backup → <b>every hash</b></td><td>DCSync (DRSUAPI) with secretsdump</td><td><code>backup</code> holds directory replication rights</td></tr>
+      <tr><td>4</td><td>hash → <b>Administrator</b></td><td>Pass-the-hash over WinRM</td><td>NTLM hashes usable directly for logon</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="method">
+  <h2><span class="n">02</span>Methodology</h2>
+  <p>The room is split into guided tasks, but each step still follows the same loop: <strong>what I knew → what I tried → what it told me</strong>. The lab IP changed once mid-engagement (<code>10.48.187.180</code> → <code>10.48.149.29</code>) when the VM was redeployed.</p>
+
+  <h3>Phase 1 · Recon</h3>
+  <dl class="loop">
+    <div><dt>Known</dt><dd>One IP.</dd></div>
+    <div><dt>Action</dt><dd><pre><code>rustscan -a &lt;target&gt; -- -sC -sV -A</code></pre></dd></div>
+    <div class="res"><dt>Result</dt><dd>53, 80 (IIS 10.0), 88, 135, 139, 389, 445, 464, 593, 636, 3268/9, 3389, 5985, 9389 → a Domain Controller for <code>spookysec.local</code>, host <code>AttacktiveDirectory.spookysec.local</code>. SMB signing required.</dd></div>
+  </dl>
+
+  <h3>Phase 2 · SMB / NetBIOS enumeration</h3>
+  <pre><code>enum4linux &lt;target&gt;</code></pre>
+  <figure><img src="img/enum4linux-domain.png" alt="enum4linux output showing domain name THM-AD and the domain SID" loading="lazy"><figcaption>Fig. 1 · enum4linux: NetBIOS domain THM-AD</figcaption></figure>
+
+  <h3>Phase 3 · Kerberos user enumeration</h3>
+  <dl class="loop">
+    <div><dt>Hypothesis</dt><dd>Kerberos answers differently for valid and invalid usernames, so a wordlist can be checked without any credentials.</dd></div>
+    <div><dt>Action</dt><dd><pre><code>kerbrute userenum -d spookysec.local --dc AttacktiveDirectory.spookysec.local users.txt</code></pre></dd></div>
+    <div class="res"><dt>Result</dt><dd>23,105 names tested, 11 hits (7 unique accounts once case variants are removed): <code>james</code>, <code>svc-admin</code>, <code>robin</code>, <code>darkstar</code>, <code>administrator</code>, <code>backup</code>, <code>paradox</code>. Kerbrute also flagged that <strong><code>svc-admin</code> has no pre-auth required</strong> and dumped its AS-REP on the spot.</dd></div>
+  </dl>
+
+  <h3>Phase 4 · AS-REP roast and crack</h3>
+  <p>Without pre-auth, the KDC returns an AS-REP encrypted with the account's password-derived key to anyone who asks. The captured hash starts with <code>$krb5asrep$23$</code>, which is etype 23 (RC4), hashcat mode 18200:</p>
+  <pre><code>hashcat -m 18200 hash.txt passwordlist.txt -o crack_hash.txt     # → svc-admin's password</code></pre>
+
+  <h3>Phase 5 · SMB shares as svc-admin</h3>
+  <dl class="loop">
+    <div><dt>Action</dt><dd><pre><code>smbclient -L //spookysec.local -U 'svc-admin%&lt;pw&gt;'</code></pre></dd></div>
+    <div class="res"><dt>Result</dt><dd>Six shares. <code>backup</code> is the only non-default one, and it held <code>backup_credentials.txt</code>: one base64 string that decodes to <code>backup@spookysec.local:&lt;pw&gt;</code>.</dd></div>
+  </dl>
+  <div class="note"><b>Analyst note</b>The account name was the hint. A user called <code>backup</code> on a DC is often given replication rights so it can copy directory data, which is exactly what DCSync needs.</div>
+
+  <h3>Phase 6 · DCSync as backup</h3>
+  <pre><code>secretsdump.py spookysec.local/backup:'&lt;pw&gt;'@&lt;target&gt;</code></pre>
+  <p>The registry route failed first (<code>RemoteOperations failed: rpc_s_access_denied</code>, since <code>backup</code> isn't a local admin). Secretsdump then fell back to <strong>DRSUAPI replication</strong> and returned the NT hash and Kerberos keys of every account, <code>Administrator</code> and <code>krbtgt</code> included.</p>
+  <div class="note"><b>Also in the dump</b><code>a-spooks</code> has the same NT hash as <code>Administrator</code>, and <code>skidy</code> and <code>breakerofthings</code> share one too. Identical NT hashes mean identical passwords.</div>
+
+  <h3>Phase 7 · Pass-the-hash</h3>
+  <pre><code>evil-winrm -i &lt;target&gt; -u Administrator -H &lt;hash&gt;</code></pre>
+  <p>Shell as Administrator without ever knowing the password. From there I pulled the three flags from the <code>svc-admin</code>, <code>backup</code> and <code>Administrator</code> desktops.</p>
+</section>
+
+<section id="attack">
+  <h2><span class="n">03</span>MITRE ATT&amp;CK mapping</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Technique</th><th>ID</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Network Service Discovery</td><td class="mono">T1046</td><td>rustscan / nmap</td></tr>
+      <tr><td>Account Discovery: Domain Account</td><td class="mono">T1087.002</td><td>enum4linux, kerbrute</td></tr>
+      <tr><td>Steal or Forge Kerberos Tickets: AS-REP Roasting</td><td class="mono">T1558.004</td><td>svc-admin</td></tr>
+      <tr><td>Brute Force: Password Cracking</td><td class="mono">T1110.002</td><td>hashcat -m 18200</td></tr>
+      <tr><td>Unsecured Credentials: Credentials In Files</td><td class="mono">T1552.001</td><td><code>backup_credentials.txt</code></td></tr>
+      <tr><td>OS Credential Dumping: DCSync</td><td class="mono">T1003.006</td><td>secretsdump (DRSUAPI)</td></tr>
+      <tr><td>Use Alternate Auth Material: Pass the Hash</td><td class="mono">T1550.002</td><td>evil-winrm -H</td></tr>
+      <tr><td>Remote Services: WinRM</td><td class="mono">T1021.006</td><td>evil-winrm</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="remediation">
+  <h2><span class="n">04</span>Root causes &amp; remediation</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Finding</th><th>Risk</th><th>Remediation</th></tr></thead>
+    <tbody>
+      <tr><td>Pre-auth disabled on <code>svc-admin</code></td><td>Offline password cracking by anyone</td><td>Require Kerberos pre-auth on every account; long random passwords for service accounts</td></tr>
+      <tr><td>Credentials in an SMB share</td><td>Credential exposure</td><td>Remove the file; store secrets in a vault; base64 is encoding, not protection</td></tr>
+      <tr><td><code>backup</code> holds replication rights</td><td>DCSync of the whole domain</td><td>Grant <em>Replicating Directory Changes (All)</em> only to DCs; alert on DRSUAPI requests from non-DC hosts</td></tr>
+      <tr><td>Shared passwords (identical NT hashes)</td><td>One crack compromises several accounts</td><td>Unique passwords per account; separate admin accounts with LAPS-style rotation</td></tr>
+      <tr><td>Hashes usable for logon</td><td>Pass-the-hash</td><td>Restrict NTLM, use Credential Guard, limit WinRM to admin hosts</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="lessons">
+  <h2><span class="n">05</span>Lessons</h2>
+  <ul>
+    <li><strong>Kerbrute does two jobs at once.</strong> The same run that finds valid users also spots accounts without pre-auth.</li>
+    <li><strong>Account names are reconnaissance.</strong> <code>backup</code> pointed straight at replication rights.</li>
+    <li><strong>A failed method isn't a failed attack.</strong> Secretsdump's registry route was denied, but DRSUAPI still worked.</li>
+    <li><strong>Read the whole dump.</strong> Matching NT hashes reveal password reuse without cracking anything.</li>
+  </ul>
+  <h3>Skills demonstrated</h3>
+  <div class="tags">
+    <span>AD enumeration</span><span>Kerbrute</span><span>AS-REP roasting</span><span>hashcat</span><span>SMB enumeration</span><span>DCSync</span><span>Impacket</span><span>Pass-the-hash</span><span>Evil-WinRM</span><span>Remediation</span>
+  </div>
+</section>
+
+<footer>
+  <span>Flags, secrets and hashes redacted · Written with AI assistance · <a href="notes.html">Raw notes</a></span>
+  <a href="/#writeups">← Back to case files</a>
+</footer>
+
+</div>
+<script>
+  var b = document.getElementById('theme'), r = document.documentElement;
+  function label(){ b.textContent = r.classList.contains('dark') ? '[DARK]' : '[LIGHT]'; }
+  label();
+  b.onclick = function(){ var d = r.classList.toggle('dark'); try { localStorage.setItem('theme', d ? 'dark' : 'light'); } catch(e){} label(); };
+</script>
+</body>
+</html>

@@ -6,10 +6,10 @@ export default function WriteUps() {
     {
       id: "1",
       title: "TryHackMe: Attacktive Directory",
-      stamp: "Medium",
+      stamp: "Case File",
       desc: "Full Active Directory attack chain: Kerberos user enumeration, AS-REP Roasting a no-preauth service account, an SMB share leaking backup credentials, DCSync via DRSUAPI, and Pass-the-Hash to Administrator.",
       stack: "Kerberos · AS-REP Roasting · DCSync · Pass-the-Hash",
-      link: "https://medium.com/@antisocialstare/tryhackme-attacktive-directory-writeup-a061dd62cedf"
+      link: "/writeups/attacktive-directory/"
     },
     {
       id: "2",
